@@ -1,0 +1,232 @@
+package com.api.implement;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.api.exception.pegawai.*;
+import com.api.models.UserRole;
+import com.api.models.entities.Pegawai;
+import com.api.models.entities.User;
+import com.api.models.repos.PegawaiRepo;
+import com.api.models.repos.UserRepo;
+import com.api.services.PegawaiService;
+
+@Service
+public class PegawaiImpl implements PegawaiService {
+
+    @Autowired
+    private PegawaiRepo pegawaiRepo;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private UserRepo userRepo;
+
+    @Override
+    public Pegawai createPegawai(Pegawai pegawai) {
+        Pegawai pegawaiDB = new Pegawai();
+
+        if (Objects.nonNull(pegawai.getNama()) &&
+                !"".equalsIgnoreCase(pegawai.getNama())) {
+            pegawaiDB.setNama(pegawai.getNama());
+        } else {
+            throw new PegawaiExceptionBadRequest("Nama tidak boleh kosong");
+        }
+
+        if (Objects.nonNull(pegawai.getEmail()) &&
+                !"".equalsIgnoreCase(pegawai.getEmail())) {
+            pegawaiDB.setEmail(pegawai.getEmail());
+        } else {
+            throw new PegawaiExceptionBadRequest("Email tidak boleh kosong");
+        }
+
+        if (Objects.nonNull(pegawai.getAlamat()) &&
+                !"".equalsIgnoreCase(pegawai.getAlamat())) {
+            pegawaiDB.setAlamat(pegawai.getAlamat());
+        } else {
+            throw new PegawaiExceptionBadRequest("Alamat tidak boleh kosong");
+        }
+
+        pegawaiDB.setTglLahir(pegawai.getTglLahir());
+        pegawaiDB.setNoHp(pegawai.getNoHp());
+
+        if (Objects.nonNull(pegawai.getNoHp()) &&
+                !"".equalsIgnoreCase(pegawai.getNoHp())) {
+            pegawaiDB.setNoHp(pegawai.getNoHp());
+        } else {
+            throw new PegawaiExceptionBadRequest("Nomor Handphone tidak boleh kosong");
+        }
+
+        // Id pegawai
+        Integer counter = findGenerateIdPegawai(1);
+        if (counter == 0) {
+            counter += 1;
+            Integer changeCounter = updateGenereteIdPegawai(counter, 1);
+            pegawaiDB.setId("P0" + changeCounter);
+        } else {
+            if (counter < 9) {
+                counter += 1;
+                pegawaiDB.setId("P0" + counter);
+                updateGenereteIdPegawai(counter, 1);
+            } else {
+                counter += 1;
+                pegawaiDB.setId("P" + counter);
+                updateGenereteIdPegawai(counter, 1);
+            }
+        }
+
+        pegawaiDB.setFoto("profile.png");
+        pegawaiDB.setStatus(true);
+        pegawaiDB.setCreator(1);
+        return pegawaiRepo.save(pegawaiDB);
+    }
+
+    @Override
+    public Pegawai addUserPegawai(String id, String role) {
+        if (pegawaiRepo.findById(id).isEmpty()) {
+            throw new PegawaiExceptionNotFound("Data tidak ditemukan");
+        }
+        Pegawai pegawaiDB = pegawaiRepo.findById(id).get();
+
+        // insert MO to user
+        if ("Kasir".equalsIgnoreCase(role)) {
+            User userDB = new User();
+            userDB.setUserLogin(pegawaiDB.getId());
+            String encodedPassword = bCryptPasswordEncoder.encode(pegawaiDB.getNoHp());
+            userDB.setPasswordLogin(encodedPassword);
+
+            userDB.setUserRole(UserRole.KASIR);
+            userDB.setPegawai(pegawaiDB);
+            userRepo.save(userDB);
+        }
+
+        if ("Manajer Operasional".equalsIgnoreCase(role)) {
+            User userDB = new User();
+            userDB.setUserLogin(pegawaiDB.getId());
+            String encodedPassword = bCryptPasswordEncoder.encode(pegawaiDB.getNoHp());
+            userDB.setPasswordLogin(encodedPassword);
+
+            userDB.setUserRole(UserRole.MO);
+            userDB.setPegawai(pegawaiDB);
+            userRepo.save(userDB);
+        }
+        pegawaiDB.setModifier(1);
+        Date date = new Date();
+        pegawaiDB.setModified_time(date);
+
+        return pegawaiRepo.save(pegawaiDB);
+    }
+
+    @Override
+    public Integer findGenerateIdPegawai(Integer id) {
+        return pegawaiRepo.findgenerateIdPegawaiByGenereateTabel(id);
+    }
+
+    @Override
+    public Integer updateGenereteIdPegawai(Integer counter, Integer id) {
+        return pegawaiRepo.updateGenereteIdByGenerateTabel(counter, id);
+    }
+
+    @Override
+    public void deletePegawai(String id) {
+        pegawaiRepo.deleteById(id);
+    }
+
+    @Override
+    public List<Pegawai> findAll() {
+        return (List<Pegawai>) pegawaiRepo.findAll();
+    }
+
+    @Override
+    public Pegawai findByIdPegawai(String id) {
+        if (pegawaiRepo.findById(id).isEmpty()) {
+            throw new PegawaiExceptionNotFound("Data tidak ditemukan");
+        }
+        return pegawaiRepo.findById(id).get();
+    }
+
+    @Override
+    public Pegawai updatePegawai(String id, Pegawai pegawai) {
+        if (pegawaiRepo.findById(id).isEmpty()) {
+            throw new PegawaiExceptionNotFound("Data tidak ditemukan");
+        }
+
+        Pegawai pegawaiDB = pegawaiRepo.findById(id).get();
+
+        if (Objects.nonNull(pegawai.getNama()) &&
+                !"".equalsIgnoreCase(pegawai.getNama())) {
+            pegawaiDB.setNama(pegawai.getNama());
+        } else {
+            throw new PegawaiExceptionBadRequest("Nama tidak boleh kosong");
+        }
+
+        if (Objects.nonNull(pegawai.getEmail()) &&
+                !"".equalsIgnoreCase(pegawai.getEmail())) {
+            pegawaiDB.setEmail(pegawai.getEmail());
+        } else {
+            throw new PegawaiExceptionBadRequest("Email tidak boleh kosong");
+        }
+
+        if (Objects.nonNull(pegawai.getAlamat()) &&
+                !"".equalsIgnoreCase(pegawai.getAlamat())) {
+            pegawaiDB.setAlamat(pegawai.getAlamat());
+        } else {
+            throw new PegawaiExceptionBadRequest("Alamat tidak boleh kosong");
+        }
+
+        pegawaiDB.setTglLahir(pegawai.getTglLahir());
+        pegawaiDB.setNoHp(pegawai.getNoHp());
+
+        if (Objects.nonNull(pegawai.getNoHp()) &&
+                !"".equalsIgnoreCase(pegawai.getNoHp())) {
+            pegawaiDB.setNoHp(pegawai.getNoHp());
+        } else {
+            throw new PegawaiExceptionBadRequest("Nomor Handphone tidak boleh kosong");
+        }
+        pegawaiDB.setModifier(pegawai.getModifier());
+
+        Date date = new Date();
+        pegawaiDB.setModified_time(date);
+        return pegawaiRepo.save(pegawaiDB);
+    }
+
+    @Override
+    public Pegawai updateFotoPegawai(String id, String foto) {
+        if (pegawaiRepo.findById(id).isEmpty()) {
+            throw new PegawaiExceptionNotFound("Data tidak ditemukan");
+        }
+        Pegawai pegawaiDB = pegawaiRepo.findById(id).get();
+        if (Objects.nonNull(foto) &&
+                !"".equalsIgnoreCase(foto)) {
+            pegawaiDB.setFoto(foto);
+        }
+
+        return pegawaiRepo.save(pegawaiDB);
+    }
+
+    @Override
+    public Pegawai updatePegawaiStatus(String id) {
+        if (pegawaiRepo.findById(id).isEmpty()) {
+            throw new PegawaiExceptionNotFound("Data tidak ditemukan");
+        }
+        Pegawai pegawaiDB = pegawaiRepo.findById(id).get();
+        pegawaiDB.setStatus(false);
+
+        return pegawaiRepo.save(pegawaiDB);
+    }
+
+    @Override
+    public List<Pegawai> findByEmail(String email) {
+        if (pegawaiRepo.findByEmail(email).isEmpty()) {
+            throw new PegawaiExceptionNotFound("Data tidak ditemukan");
+        }
+        return pegawaiRepo.findByEmail(email);
+    }
+
+}
