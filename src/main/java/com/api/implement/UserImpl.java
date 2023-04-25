@@ -60,19 +60,40 @@ public class UserImpl {
                         String.format("User dengan username '%s' tidak ditemukan", memberDB.getEmail())));
     }
 
+    // public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    // authenticationManager.authenticate(
+    // new UsernamePasswordAuthenticationToken(request.getUsername(),
+    // request.getPassword()));
+
+    // User user = userRepo.findByUserLogin(request.getUsername()).orElseThrow();
+
+    // String jwtToken = jwtService.generateToken(user);
+    // return AuthenticationResponse.builder()
+    // .password(request.getPassword())
+    // .username(request.getUsername())
+    // .token(jwtToken)
+    // .build();
+    // }
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        User user = userRepo.findByUserLogin(request.getUsername()).orElseThrow();
-
-        String jwtToken = jwtService.generateToken(user);
+        User userDB = userRepo.findByUserLogin(request.getUsername()).orElseThrow();
+        // if (userDB != null) {
+        String jwtToken = jwtService.generateToken(userDB);
         return AuthenticationResponse.builder()
                 .password(request.getPassword())
                 .username(request.getUsername())
                 .token(jwtToken)
+                .role(userDB.getUserRole())
                 .build();
+        // } else {
+        // return AuthenticationResponse
+        // }
+
     }
+
     // public AuthenticationResponse authenticate(User user) {
 
     // // AuthenticationManager authenticationManager = securityApi.authManager(new

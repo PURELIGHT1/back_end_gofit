@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api")
+@CrossOrigin
 public class PromoController {
 
         @Autowired
@@ -37,13 +39,13 @@ public class PromoController {
                                 responseData.getMessage().add(error.getDefaultMessage());
                         }
                         responseData.setStatus(false);
-                        responseData.setPayload(null);
+                        responseData.setData(null);
 
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
                 }
                 responseData.getMessage().add("Berhasil menambah Data");
                 responseData.setStatus(true);
-                responseData.setPayload(promoService.createPromo(promo));
+                responseData.setData(promoService.createPromo(promo));
                 return ResponseEntity.ok(responseData);
 
                 // return ResponseHandler.responseEntity("Berhasil menambah data",

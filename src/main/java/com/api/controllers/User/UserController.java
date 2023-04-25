@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,6 +27,7 @@ import com.api.services.MemberService;
 import com.api.util.ResponseHandler;
 
 @RestController
+@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -48,12 +50,12 @@ public class UserController {
                 response.getMessage().add(error.getDefaultMessage());
             }
             response.setStatus(false);
-            response.setPayload(null);
+            response.setData(null);
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
-        response.setPayload(service.registerUser(user));
+        response.setData(service.registerUser(user));
         response.setStatus(true);
         response.getMessage().add("Berhasil registrasi");
         return ResponseEntity.ok(response);
@@ -61,8 +63,29 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
-        return ResponseEntity.ok(service.authenticate(request));
+    public ResponseEntity<ResponseData<AuthenticationResponse>> login(@RequestBody AuthenticationRequest request,
+            Errors errors) {
+        // return ResponseEntity.ok(service.authenticate(request));
+        ResponseData<AuthenticationResponse> responseData = new ResponseData<>();
+        if (errors.hasErrors()) {
+            for (ObjectError error : errors.getAllErrors()) {
+                responseData.getMessage().add(error.getDefaultMessage());
+            }
+            responseData.setStatus(false);
+            responseData.setData(null);
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+        }
+        // AuthenticationResponse response = ;
+
+        AuthenticationResponse response = service.authenticate(request);
+
+        responseData.getMessage().add("Berhasil login");
+        responseData.setStatus(true);
+        responseData.setData(response);
+
+        return ResponseEntity.ok(responseData);
+
     }
     // @PostMapping("/login")
     // public Respons<> login(@RequestBody userData){
@@ -79,12 +102,12 @@ public class UserController {
     // response.getMessage().add(error.getDefaultMessage());
     // }
     // response.setStatus(false);
-    // response.setPayload(null);
+    // response.setData(null);
 
     // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     // }
 
-    // response.setPayload(service.registerUser(user));
+    // response.setData(service.registerUser(user));
     // response.setStatus(true);
     // response.getMessage().add("Berhasil registrasi");
     // return ResponseEntity.ok(response);

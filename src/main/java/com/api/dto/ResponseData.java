@@ -11,5 +11,5 @@ import lombok.Setter;
 public class ResponseData<T> {
     private boolean status;
     private List<String> message = new ArrayList<>();
-    private T payload;
+    private T data;
 }

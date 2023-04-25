@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +30,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api")
+@CrossOrigin
 public class JadwalUmumController {
 
     @Autowired
@@ -57,7 +59,7 @@ public class JadwalUmumController {
 
     // responseData.setMessageSucceses(null);
     // responseData.setStatus(false);
-    // responseData.setPayload(null);
+    // responseData.setData(null);
 
     // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
     // }
@@ -77,14 +79,14 @@ public class JadwalUmumController {
 
     // responseData.setMessageSucceses("Berhasil menambah data");
     // responseData.setStatus(true);
-    // responseData.setPayload(service.createJadwalUmum(jadwalUmum));
+    // responseData.setData(service.createJadwalUmum(jadwalUmum));
 
     // return ResponseEntity.ok(responseData);
     // }
 
     @PostMapping(value = "jadwal_umum/{id}/{id2}", consumes = { "application/xml",
             "application/json" })
-    public ResponseEntity<ResponseData<JadwalUmum>> createPromo(@PathVariable("id") String id,
+    public ResponseEntity<ResponseData<JadwalUmum>> createPromo(@PathVariable("id") String idIns,
             @PathVariable("id2") Integer idKelas, @Valid @RequestBody JadwalUmum jadwal,
             Errors errors) {
 
@@ -94,7 +96,7 @@ public class JadwalUmumController {
                 responseData.getMessage().add(error.getDefaultMessage());
             }
             responseData.setStatus(false);
-            responseData.setPayload(null);
+            responseData.setData(null);
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
         }
@@ -111,7 +113,7 @@ public class JadwalUmumController {
         String generateString = RandomStringUtils.randomAlphanumeric(8);
         jadwalUmum.setId("JU." + currentDateTime + "." + generateString);
         Instruktur instruktur = new Instruktur();
-        instruktur = instrukturService.findByIdInstruktur(id);
+        instruktur = instrukturService.findByIdInstruktur(idIns);
         jadwalUmum.setInstruktur(instruktur);
 
         Kelas kelas = new Kelas();
@@ -122,7 +124,7 @@ public class JadwalUmumController {
 
         responseData.getMessage().add("Berhasil menambah Data");
         responseData.setStatus(true);
-        responseData.setPayload(service.createJadwalUmum(jadwalUmum));
+        responseData.setData(service.createJadwalUmum(jadwalUmum));
 
         return ResponseEntity.ok(responseData);
     }
