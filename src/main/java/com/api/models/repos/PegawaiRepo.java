@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 import com.api.models.entities.Pegawai;
+import com.api.models.entities.User;
+import com.api.models.entities.token.Token;
 
 import jakarta.transaction.Transactional;
 
@@ -17,6 +19,12 @@ public interface PegawaiRepo extends JpaRepository<Pegawai, String> {
 
     @Query("SELECT generateIdPegawai FROM generate gr WHERE gr.id = ?1")
     public Integer findgenerateIdPegawaiByGenereateTabel(Integer id);
+
+    @Query("SELECT u FROM _user u WHERE u.pegawai = ?1")
+    public List<User> findUserPegawai(Pegawai pegawai);
+
+    @Query("SELECT t FROM Token t WHERE t.user = ?1")
+    public List<Token> findTokenUser(User user);
 
     @Modifying
     @Transactional

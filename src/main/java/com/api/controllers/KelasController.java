@@ -25,6 +25,7 @@ public class KelasController {
     @Autowired
     private KelasService kelasService;
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/kelas")
     public ResponseEntity<Object> findAllPromo() {
 
@@ -32,6 +33,7 @@ public class KelasController {
                 kelasService.findAll());
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/kelas/{id}")
     public ResponseEntity<Object> getByIdPromo(@PathVariable("id") Integer id) {
 
@@ -39,6 +41,7 @@ public class KelasController {
                 kelasService.findByIdKelas(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PostMapping(value = "kelas", consumes = { "application/xml", "application/json" })
     public ResponseEntity<Object> createPromo(@RequestBody @Validated Kelas kelas) {
 
@@ -46,6 +49,7 @@ public class KelasController {
                 kelasService.createKelas(kelas));
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PutMapping("/kelas/{id}")
     public ResponseEntity<Object> updatePromo(@PathVariable("id") Integer id,
             @RequestBody @Validated Kelas kelas) {
@@ -55,6 +59,7 @@ public class KelasController {
 
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @DeleteMapping("/kelas/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable("id") Integer id) {
 

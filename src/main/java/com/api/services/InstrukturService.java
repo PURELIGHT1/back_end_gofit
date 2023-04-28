@@ -23,8 +23,4 @@ public interface InstrukturService {
     List<Instruktur> findByEmail(String email);
 
     List<Instruktur> findByInisial(String inisial);
-
-    Integer findGenerateIdInstruktur(Integer id);
-
-    Integer updateGenereteIdInstruktur(Integer counter, Integer id);
 }

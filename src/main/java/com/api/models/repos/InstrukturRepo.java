@@ -7,10 +7,18 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 import com.api.models.entities.Instruktur;
+import com.api.models.entities.User;
 
 import jakarta.transaction.Transactional;
 
 public interface InstrukturRepo extends JpaRepository<Instruktur, String> {
+
+    // @Query("SELECT i FROM _user u JOIN instruktur i ON u.instruktur = i.id GROUP
+    // BY i.id, u.id")
+    // @Query("SELECT * FROM instruktur i NATURAL JOIN user u")
+    // public Collection<> findALLByUser();
+    @Query("SELECT u FROM _user u WHERE u.instruktur = ?1")
+    public List<User> findUserInstruktur(Instruktur instruktur);
 
     @Query("SELECT i FROM instruktur i WHERE i.email = ?1")
     public List<Instruktur> findByEmail(String email);

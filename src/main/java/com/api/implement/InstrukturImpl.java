@@ -10,25 +10,32 @@ import org.springframework.stereotype.Service;
 
 import com.api.exception.instruktur.InstrukturExceptionBadRequest;
 import com.api.exception.instruktur.InstrukturExceptionNotFound;
+import com.api.implement.builder.GenerateImpl;
 import com.api.models.UserRole;
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.User;
 import com.api.models.repos.InstrukturRepo;
+import com.api.models.repos.TokenRepo;
 import com.api.models.repos.UserRepo;
 import com.api.services.InstrukturService;
 
 @Service
 public class InstrukturImpl implements InstrukturService {
 
-    @Override
-    public Integer findGenerateIdInstruktur(Integer id) {
-        return instrukturRepo.findgenerateIdInstrukturByGenereateTabel(id);
-    }
+    @Autowired
+    private InstrukturRepo instrukturRepo;
 
-    @Override
-    public Integer updateGenereteIdInstruktur(Integer counter, Integer id) {
-        return instrukturRepo.updateGenereteIdByGenerateTabel(counter, id);
-    }
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private UserRepo userRepo;
+
+    @Autowired
+    private TokenRepo tokenRepo;
+
+    @Autowired
+    private GenerateImpl generateImpl;
 
     @Override
     public List<Instruktur> findByEmail(String email) {
@@ -45,15 +52,6 @@ public class InstrukturImpl implements InstrukturService {
         }
         return instrukturRepo.findByInisial(inisial);
     }
-
-    @Autowired
-    private InstrukturRepo instrukturRepo;
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Autowired
-    private UserRepo userRepo;
 
     @Override
     public Instruktur createInstruktur(Instruktur instruktur) {
@@ -97,20 +95,20 @@ public class InstrukturImpl implements InstrukturService {
         }
 
         // Id Instruktur
-        Integer counter = findGenerateIdInstruktur(1);
+        Integer counter = generateImpl.findGenerateIdInstruktur(1);
         if (counter == 0) {
             counter += 1;
-            Integer changeCounter = updateGenereteIdInstruktur(counter, 1);
-            instrukturDB.setId("P0" + changeCounter + "_" + instrukturDB.getInisial());
+            Integer changeCounter = generateImpl.updateGenereteIdInstruktur(counter);
+            instrukturDB.setId("P0" + changeCounter + "-" + instruktur.getInisial());
         } else {
             if (counter < 9) {
                 counter += 1;
-                instrukturDB.setId("P0" + counter + "_" + instrukturDB.getInisial());
-                updateGenereteIdInstruktur(counter, 1);
+                instrukturDB.setId("P0" + counter + "-" + instruktur.getInisial());
+                generateImpl.updateGenereteIdInstruktur(counter);
             } else {
                 counter += 1;
-                instrukturDB.setId("P" + counter + "_" + instrukturDB.getInisial());
-                updateGenereteIdInstruktur(counter, 1);
+                instrukturDB.setId("P" + counter + "-" + instruktur.getInisial());
+                generateImpl.updateGenereteIdInstruktur(counter);
             }
         }
 
@@ -137,6 +135,11 @@ public class InstrukturImpl implements InstrukturService {
 
     @Override
     public void deleteInstruktur(String id) {
+        Instruktur instrukturDB = instrukturRepo.findById(id).get();
+        User userDB = instrukturRepo.findUserInstruktur(instrukturDB).get(0);
+        // TokenRepo token = tokenRepo.findById(tokeDB.getId());
+        tokenRepo.deleteAll();
+        userRepo.deleteById(userDB.getId());
         instrukturRepo.deleteById(id);
     }
 
@@ -183,19 +186,24 @@ public class InstrukturImpl implements InstrukturService {
         }
 
         instrukturDB.setTglLahir(instruktur.getTglLahir());
-        instrukturDB.setNoHp(instruktur.getNoHp());
-
-        if (Objects.nonNull(instruktur.getNoHp()) &&
-                !"".equalsIgnoreCase(instruktur.getNoHp())) {
-            instrukturDB.setNoHp(instruktur.getNoHp());
-        } else {
-            throw new InstrukturExceptionBadRequest("Nomor Handphone tidak boleh kosong");
-        }
         instrukturDB.setModifier(instruktur.getModifier());
 
         Date date = new Date();
         instrukturDB.setModified_time(date);
-        return instrukturRepo.save(instrukturDB);
+
+        // update to user
+        User userDB = userRepo.findUserByInstruktur(instrukturDB);
+        userDB.setUserLogin(instrukturDB.getInisial());
+        if (instrukturDB.getNoHp().equals(instruktur.getNoHp())) {
+            userDB.setPasswordLogin(userDB.getPasswordLogin());
+        } else {
+            instrukturDB.setNoHp(instruktur.getNoHp());
+            String encodedPassword = bCryptPasswordEncoder.encode(instruktur.getNoHp());
+            userDB.setPasswordLogin(encodedPassword);
+        }
+        instrukturRepo.save(instrukturDB);
+        userRepo.save(userDB);
+        return instrukturDB;
     }
 
     @Override

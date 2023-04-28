@@ -49,29 +49,33 @@ public class MemberController {
     @Autowired
     private MemberService MemberService;
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/members")
-    public ResponseEntity<Object> findAllPromo() {
+    public ResponseEntity<Object> findAllMember() {
 
         return ResponseHandler.responseEntity("Berhasil mengambil seluruh data", HttpStatus.OK,
                 MemberService.findAll());
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/members/{id}")
-    public ResponseEntity<Object> getByIdPromo(@PathVariable("id") String id) {
+    public ResponseEntity<Object> getByIdMember(@PathVariable("id") String id) {
 
         return ResponseHandler.responseEntity("Berhasil mengambil data", HttpStatus.OK,
                 MemberService.findByIdMember(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PostMapping(value = "members", consumes = { "application/xml", "application/json" })
-    public ResponseEntity<Object> createPromo(@RequestBody @Validated Member member) {
+    public ResponseEntity<Object> createMember(@RequestBody @Validated Member member) {
 
         return ResponseHandler.responseEntity("Berhasil menambah data", HttpStatus.CREATED,
                 MemberService.createMember(member));
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PutMapping("/members/{id}")
-    public ResponseEntity<Object> updatePromo(@PathVariable("id") String id,
+    public ResponseEntity<Object> updateMember(@PathVariable("id") String id,
             @RequestBody @Validated Member member) {
 
         return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.CREATED,
@@ -79,26 +83,26 @@ public class MemberController {
 
     }
 
-    @DeleteMapping("/members/{id}")
-    public ResponseEntity<Object> deleteById(@PathVariable("id") String id) {
-
-        Member promoDB = MemberService.findByIdMember(id);
-        MemberService.deleteMember(id);
-
-        return ResponseHandler.responseEntity("Berhasil hapus data", HttpStatus.OK,
-                promoDB);
-
-    }
-
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PutMapping("/members/status/{id}")
-    public ResponseEntity<Object> updatePromoStatus(@PathVariable("id") String id) {
+    public ResponseEntity<Object> updateMemberStatus(@PathVariable("id") String id) {
 
-        return ResponseHandler.responseEntity("Berhasil mengubah status", HttpStatus.ACCEPTED,
+        return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.OK,
                 MemberService.updateMemberStatus(id));
 
     }
 
-    @PostMapping(value = "members/foto/{id}")
+    @CrossOrigin(origins = "http://localhost:8081/")
+    @DeleteMapping("/members/{id}")
+    public ResponseEntity<Object> deleteMemberStatus(@PathVariable("id") String id) {
+
+        return ResponseHandler.responseEntity("Berhasil hapus data", HttpStatus.ACCEPTED,
+                MemberService.updateMemberStatus(id));
+
+    }
+
+    @CrossOrigin(origins = "http://localhost:8081/")
+    @PostMapping("members/foto/{id}")
     public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("foto") MultipartFile multipartFile,
             @PathVariable("id") String id)
             throws MemberExceptionNotFound {
@@ -116,6 +120,7 @@ public class MemberController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("members/foto/{fileCode}")
     public ResponseEntity<?> downloadFile(@PathVariable("fileCode") String fileCode) {
 
@@ -153,6 +158,7 @@ public class MemberController {
 
     // }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/members/pdf")
     public void generateCardMember(HttpServletResponse response) {
         response.setContentType("application/pdf");

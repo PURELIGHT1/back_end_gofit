@@ -12,10 +12,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.api.exception.member.*;
+import com.api.implement.builder.GenerateImpl;
 import com.api.models.UserRole;
 import com.api.models.entities.Member;
 import com.api.models.entities.User;
 import com.api.models.repos.MemberRepo;
+import com.api.models.repos.TokenRepo;
 import com.api.models.repos.UserRepo;
 import com.api.services.MemberService;
 
@@ -29,7 +31,13 @@ public class MemberImpl implements MemberService {
     private UserRepo userRepo;
 
     @Autowired
+    private TokenRepo tokenRepo;
+
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private GenerateImpl generateImpl;
 
     @Override
     public Member createMember(Member member) {
@@ -70,26 +78,28 @@ public class MemberImpl implements MemberService {
         DateFormat dateFormat = new SimpleDateFormat("YY.MM");
         Date date = new Date();
         String currentDateTime = dateFormat.format(date);
-        Integer counter = findGenerateIdMember(1);
+
+        Integer counter = generateImpl.findGenerateIdMember(1);
         if (counter == 0) {
             counter += 1;
-            Integer changeCounter = updateGenereteIdMember(counter, 1);
+            Integer changeCounter = generateImpl.updateGenereteIdMember(counter);
             memberDB.setId(currentDateTime + ".0" + changeCounter);
         } else {
             if (counter < 9) {
+                counter += 1;
                 memberDB.setId(currentDateTime + ".0" + counter);
-                updateGenereteIdMember(counter, 1);
+                generateImpl.updateGenereteIdMember(counter);
             } else {
                 counter += 1;
                 memberDB.setId(currentDateTime + "." + counter);
-                updateGenereteIdMember(counter, 1);
+                generateImpl.updateGenereteIdMember(counter);
             }
         }
         memberDB.setFoto("profile.png");
         // BigDecimal deposit = new BigDecimal(10.0, 1);
         memberDB.setSisaDeposit(BigDecimal.ZERO);
         memberDB.setStatus(true);
-        memberDB.setCreator(1);
+        memberDB.setCreator(member.getCreator());
         memberRepo.save(memberDB);
 
         // insert to user
@@ -101,22 +111,17 @@ public class MemberImpl implements MemberService {
         userDB.setUserRole(UserRole.MEMBER);
         userDB.setMember(memberDB);
         userRepo.save(userDB);
-
         return memberDB;
     }
 
     @Override
-    public Integer updateGenereteIdMember(Integer counter, Integer id) {
-        return memberRepo.updateGenereteIdByGenerateTabel(counter, id);
-    }
-
-    @Override
-    public Integer findGenerateIdMember(Integer id) {
-        return memberRepo.findgenerateIdMemberByGenereateTabel(id);
-    }
-
-    @Override
     public void deleteMember(String id) {
+        Member memberDB = memberRepo.findById(id).get();
+        User userDB = memberRepo.findUserMember(memberDB).get(0);
+        // TokenRepo token = tokenRepo.findById(tokeDB.getId());
+        tokenRepo.deleteAll();
+        userRepo.deleteById(userDB.getId());
+
         memberRepo.deleteById(id);
     }
 
@@ -148,12 +153,12 @@ public class MemberImpl implements MemberService {
             throw new MemberExceptionBadRequest("Nama tidak boleh kosong");
         }
 
-        if (Objects.nonNull(member.getEmail()) &&
-                !"".equalsIgnoreCase(member.getEmail())) {
-            memberDB.setEmail(member.getEmail());
-        } else {
-            throw new MemberExceptionBadRequest("Email tidak boleh kosong");
-        }
+        // if (Objects.nonNull(member.getEmail()) &&
+        // !"".equalsIgnoreCase(member.getEmail())) {
+        // memberDB.setEmail(member.getEmail());
+        // } else {
+        // throw new MemberExceptionBadRequest("Email tidak boleh kosong");
+        // }
 
         if (Objects.nonNull(member.getAlamat()) &&
                 !"".equalsIgnoreCase(member.getAlamat())) {
@@ -164,18 +169,23 @@ public class MemberImpl implements MemberService {
 
         memberDB.setTglLahir(member.getTglLahir());
         memberDB.setNoHp(member.getNoHp());
-
-        if (Objects.nonNull(member.getNoHp()) &&
-                !"".equalsIgnoreCase(member.getNoHp())) {
-            memberDB.setNoHp(member.getNoHp());
-        } else {
-            throw new MemberExceptionBadRequest("Nomor Handphone tidak boleh kosong");
-        }
         memberDB.setModifier(member.getModifier());
 
         Date date = new Date();
         memberDB.setModified_time(date);
-        return memberRepo.save(memberDB);
+
+        // update to user
+        User userDB = userRepo.findUserByMember(memberDB);
+        if (memberDB.getEmail().equals(member.getEmail())) {
+            userDB.setUserLogin(userDB.getUserLogin());
+        } else {
+            userDB.setUserLogin(member.getEmail());
+            memberDB.setEmail(member.getEmail());
+        }
+        memberRepo.save(memberDB);
+        userRepo.save(userDB);
+
+        return memberDB;
     }
 
     @Override
@@ -198,7 +208,7 @@ public class MemberImpl implements MemberService {
             throw new MemberExceptionNotFound("Data tidak ditemukan");
         }
         Member memberDB = memberRepo.findById(id).get();
-        memberDB.setStatus(false);
+        memberDB.setStatus(true);
 
         return memberRepo.save(memberDB);
     }

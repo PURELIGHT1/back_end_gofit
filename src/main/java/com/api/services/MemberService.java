@@ -19,8 +19,4 @@ public interface MemberService {
     void deleteMember(String id);
 
     Member updateFotoMember(String id, String foto);
-
-    Integer findGenerateIdMember(Integer id);
-
-    Integer updateGenereteIdMember(Integer counter, Integer id);
 }

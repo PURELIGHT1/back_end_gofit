@@ -21,7 +21,7 @@ public class PromoImpl implements PromoService {
             throw new PromoExceptionNotFound("Data tidak ditemukan");
         }
         Promo promoDB = promoRepo.findById(id).get();
-        promoDB.setStatus(false);
+        promoDB.setStatus(true);
 
         return promoRepo.save(promoDB);
     }
@@ -46,6 +46,15 @@ public class PromoImpl implements PromoService {
             throw new PromoExceptionBadRequest("Jenis tidak boleh kosong");
         }
         promoDB.setStatus(true);
+        promoDB.setAkhir(promo.getAkhir());
+        promoDB.setMulai(promo.getMulai());
+
+        if (Objects.nonNull(promo.getDeskripsi()) &&
+                !"".equalsIgnoreCase(promo.getDeskripsi())) {
+            promoDB.setDeskripsi(promo.getDeskripsi());
+        } else {
+            throw new PromoExceptionBadRequest("Deskripsi tidak boleh kosong");
+        }
         return promoRepo.save(promoDB);
     }
 
@@ -97,7 +106,16 @@ public class PromoImpl implements PromoService {
         } else {
             throw new PromoExceptionBadRequest("Jenis tidak boleh kosong");
         }
-        promoDB.setStatus(true);
+
+        promoDB.setAkhir(promo.getAkhir());
+        promoDB.setMulai(promo.getMulai());
+
+        if (Objects.nonNull(promo.getDeskripsi()) &&
+                !"".equalsIgnoreCase(promo.getDeskripsi())) {
+            promoDB.setDeskripsi(promo.getDeskripsi());
+        } else {
+            throw new PromoExceptionBadRequest("Deskripsi tidak boleh kosong");
+        }
 
         return promoRepo.save(promoDB);
     }

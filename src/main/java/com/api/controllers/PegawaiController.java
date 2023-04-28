@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.api.exception.pegawai.*;
 import com.api.models.entities.Pegawai;
+import com.api.models.repos.PegawaiRepo;
 import com.api.services.PegawaiService;
 import com.api.util.FileDownloadUtils;
 import com.api.util.FileUploadResponse;
@@ -36,8 +37,12 @@ public class PegawaiController {
 
     @Autowired
     private PegawaiService pegawaiService;
-    // @Autowired
 
+    @Autowired
+    private PegawaiRepo repo;
+
+    // @Autowired
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/pegawais")
     public ResponseEntity<Object> findAllPromo() {
 
@@ -45,6 +50,7 @@ public class PegawaiController {
                 pegawaiService.findAll());
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/pegawais/{id}")
     public ResponseEntity<Object> getByIdPromo(@PathVariable("id") String id) {
 
@@ -52,6 +58,7 @@ public class PegawaiController {
                 pegawaiService.findByIdPegawai(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PostMapping(value = "pegawais", consumes = { "application/xml", "application/json" })
     public ResponseEntity<Object> createPromo(@RequestBody @Validated Pegawai Pegawai) {
 
@@ -59,34 +66,30 @@ public class PegawaiController {
                 pegawaiService.createPegawai(Pegawai));
     }
 
-    @PutMapping("/pegawais/{id}")
-    public ResponseEntity<Object> updatePromo(@PathVariable("id") String id,
-            @RequestBody @Validated Pegawai Pegawai) {
-
-        return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.CREATED,
-                pegawaiService.updatePegawai(id, Pegawai));
-
-    }
-
-    @DeleteMapping("/pegawais/{id}")
-    public ResponseEntity<Object> deleteById(@PathVariable("id") String id) {
-
-        Pegawai promoDB = pegawaiService.findByIdPegawai(id);
-        pegawaiService.deletePegawai(id);
-
-        return ResponseHandler.responseEntity("Berhasil hapus data", HttpStatus.OK,
-                promoDB);
-
-    }
-
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PutMapping("/pegawais/status/{id}")
     public ResponseEntity<Object> updatePromoStatus(@PathVariable("id") String id) {
 
-        return ResponseHandler.responseEntity("Berhasil mengubah status", HttpStatus.ACCEPTED,
+        return ResponseHandler.responseEntity("Berhasil mengubah status data", HttpStatus.CREATED,
                 pegawaiService.updatePegawaiStatus(id));
 
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
+    @DeleteMapping("/pegawais/{id}")
+    public ResponseEntity<Object> deletePromoStatus(@PathVariable("id") String id) {
+        Pegawai pegawaiDB = pegawaiService.findByIdPegawai(id);
+        if (pegawaiDB == null) {
+            return ResponseHandler.responseEntity("Data tidak ditemukan", HttpStatus.NOT_FOUND, null);
+        }
+        pegawaiDB.setStatus(false);
+        repo.save(pegawaiDB);
+        return ResponseHandler.responseEntity("Berhasil hapus data", HttpStatus.ACCEPTED,
+                pegawaiDB);
+
+    }
+
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PostMapping(value = "pegawais/foto/{id}")
     public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("foto") MultipartFile multipartFile,
             @PathVariable("id") String id)
@@ -105,6 +108,7 @@ public class PegawaiController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PutMapping("/pegawais/{id}/{role}")
     public ResponseEntity<Object> updatePromo(@PathVariable("id") String id, @PathVariable("role") String role) {
 
@@ -113,6 +117,7 @@ public class PegawaiController {
 
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("pegawais/foto/{fileCode}")
     public ResponseEntity<?> downloadFile(@PathVariable("fileCode") String fileCode) {
 
@@ -140,6 +145,7 @@ public class PegawaiController {
                 .body(resource);
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/pegawais/email/{email}")
     public ResponseEntity<Object> getPegawaiByEmail(@PathVariable("email") String email) {
 

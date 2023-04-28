@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.dto.AuthenticationRequest;
 import com.api.dto.AuthenticationResponse;
 import com.api.dto.ResponseData;
-import com.api.implement.UserImpl;
+import com.api.implement.builder.UserImpl;
+import com.api.models.UserRole;
 import com.api.models.entities.Member;
 import com.api.models.entities.User;
 import com.api.models.repos.UserRepo;
@@ -54,18 +55,24 @@ public class UserController {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+        User userDB = new User();
+        userDB.setPasswordLogin(user.getPasswordLogin());
 
-        response.setData(service.registerUser(user));
+        String encodedPassword = bCryptPasswordEncoder.encode(user.getPasswordLogin());
+        userDB.setUserLogin(user.getUserLogin());
+        userDB.setPasswordLogin(encodedPassword);
+        userDB.setUserRole(UserRole.ADMIN);
+        response.setData(service.registerUser(userDB));
         response.setStatus(true);
         response.getMessage().add("Berhasil registrasi");
         return ResponseEntity.ok(response);
 
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PostMapping("/login")
     public ResponseEntity<ResponseData<AuthenticationResponse>> login(@RequestBody AuthenticationRequest request,
             Errors errors) {
-        // return ResponseEntity.ok(service.authenticate(request));
         ResponseData<AuthenticationResponse> responseData = new ResponseData<>();
         if (errors.hasErrors()) {
             for (ObjectError error : errors.getAllErrors()) {
@@ -76,7 +83,6 @@ public class UserController {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
         }
-        // AuthenticationResponse response = ;
 
         AuthenticationResponse response = service.authenticate(request);
 
@@ -87,32 +93,6 @@ public class UserController {
         return ResponseEntity.ok(responseData);
 
     }
-    // @PostMapping("/login")
-    // public Respons<> login(@RequestBody userData){
-
-    // }
-    // public ResponseEntity<Object> login(@RequestBody UserData userData){
-    // return ResponseEntity.ok(service.authenticate(userData));
-    // }
-    // public ResponseEntity<ResponseData<User>> login(@RequestBody UserData user,
-    // Errors errors) {
-    // ResponseData<User> response = new ResponseData<>();
-    // if (errors.hasErrors()) {
-    // for (ObjectError error : errors.getAllErrors()) {
-    // response.getMessage().add(error.getDefaultMessage());
-    // }
-    // response.setStatus(false);
-    // response.setData(null);
-
-    // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    // }
-
-    // response.setData(service.registerUser(user));
-    // response.setStatus(true);
-    // response.getMessage().add("Berhasil registrasi");
-    // return ResponseEntity.ok(response);
-
-    // }
 
     @PutMapping("/api/reset-password/{id}")
     public ResponseEntity<Object> resetPassword(@PathVariable("id") String id) {

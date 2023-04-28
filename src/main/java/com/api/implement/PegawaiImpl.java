@@ -9,10 +9,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.api.exception.pegawai.*;
+import com.api.implement.builder.GenerateImpl;
 import com.api.models.UserRole;
 import com.api.models.entities.Pegawai;
 import com.api.models.entities.User;
 import com.api.models.repos.PegawaiRepo;
+import com.api.models.repos.TokenRepo;
 import com.api.models.repos.UserRepo;
 import com.api.services.PegawaiService;
 
@@ -27,6 +29,12 @@ public class PegawaiImpl implements PegawaiService {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private TokenRepo tokenRepo;
+
+    @Autowired
+    private GenerateImpl generateImpl;
 
     @Override
     public Pegawai createPegawai(Pegawai pegawai) {
@@ -64,20 +72,20 @@ public class PegawaiImpl implements PegawaiService {
         }
 
         // Id pegawai
-        Integer counter = findGenerateIdPegawai(1);
+        Integer counter = generateImpl.findGenerateIdPegawai(1);
         if (counter == 0) {
             counter += 1;
-            Integer changeCounter = updateGenereteIdPegawai(counter, 1);
+            Integer changeCounter = generateImpl.updateGenereteIdPegawai(counter);
             pegawaiDB.setId("P0" + changeCounter);
         } else {
             if (counter < 9) {
                 counter += 1;
                 pegawaiDB.setId("P0" + counter);
-                updateGenereteIdPegawai(counter, 1);
+                generateImpl.updateGenereteIdPegawai(counter);
             } else {
                 counter += 1;
                 pegawaiDB.setId("P" + counter);
-                updateGenereteIdPegawai(counter, 1);
+                generateImpl.updateGenereteIdPegawai(counter);
             }
         }
 
@@ -95,7 +103,7 @@ public class PegawaiImpl implements PegawaiService {
         Pegawai pegawaiDB = pegawaiRepo.findById(id).get();
 
         // insert MO to user
-        if ("Kasir".equalsIgnoreCase(role)) {
+        if ("KASIR".equalsIgnoreCase(role)) {
             User userDB = new User();
             userDB.setUserLogin(pegawaiDB.getId());
             String encodedPassword = bCryptPasswordEncoder.encode(pegawaiDB.getNoHp());
@@ -106,7 +114,7 @@ public class PegawaiImpl implements PegawaiService {
             userRepo.save(userDB);
         }
 
-        if ("Manajer Operasional".equalsIgnoreCase(role)) {
+        if ("MO".equalsIgnoreCase(role)) {
             User userDB = new User();
             userDB.setUserLogin(pegawaiDB.getId());
             String encodedPassword = bCryptPasswordEncoder.encode(pegawaiDB.getNoHp());
@@ -124,17 +132,12 @@ public class PegawaiImpl implements PegawaiService {
     }
 
     @Override
-    public Integer findGenerateIdPegawai(Integer id) {
-        return pegawaiRepo.findgenerateIdPegawaiByGenereateTabel(id);
-    }
-
-    @Override
-    public Integer updateGenereteIdPegawai(Integer counter, Integer id) {
-        return pegawaiRepo.updateGenereteIdByGenerateTabel(counter, id);
-    }
-
-    @Override
     public void deletePegawai(String id) {
+        Pegawai pegawaiDB = pegawaiRepo.findById(id).get();
+        User userDB = pegawaiRepo.findUserPegawai(pegawaiDB).get(0);
+        // TokenRepo token = tokenRepo.findById(tokeDB.getId());
+        tokenRepo.deleteAll();
+        userRepo.deleteById(userDB.getId());
         pegawaiRepo.deleteById(id);
     }
 
@@ -181,19 +184,27 @@ public class PegawaiImpl implements PegawaiService {
         }
 
         pegawaiDB.setTglLahir(pegawai.getTglLahir());
-        pegawaiDB.setNoHp(pegawai.getNoHp());
-
-        if (Objects.nonNull(pegawai.getNoHp()) &&
-                !"".equalsIgnoreCase(pegawai.getNoHp())) {
-            pegawaiDB.setNoHp(pegawai.getNoHp());
-        } else {
-            throw new PegawaiExceptionBadRequest("Nomor Handphone tidak boleh kosong");
-        }
         pegawaiDB.setModifier(pegawai.getModifier());
 
         Date date = new Date();
         pegawaiDB.setModified_time(date);
-        return pegawaiRepo.save(pegawaiDB);
+
+        // update to user
+        User userDB = userRepo.findUserByPegawai(pegawaiDB);
+        if (userDB.getUserRole() == UserRole.MO) {
+            if (pegawaiDB.getNoHp().equals(pegawai.getNoHp())) {
+                userDB.setPasswordLogin(userDB.getPasswordLogin());
+            } else {
+                pegawaiDB.setNoHp(pegawai.getNoHp());
+                String encodedPassword = bCryptPasswordEncoder.encode(pegawai.getNoHp());
+                userDB.setPasswordLogin(encodedPassword);
+            }
+        }
+        pegawaiDB.setNoHp(pegawai.getNoHp());
+        pegawaiRepo.save(pegawaiDB);
+        userRepo.save(userDB);
+
+        return pegawaiDB;
     }
 
     @Override
@@ -216,7 +227,7 @@ public class PegawaiImpl implements PegawaiService {
             throw new PegawaiExceptionNotFound("Data tidak ditemukan");
         }
         Pegawai pegawaiDB = pegawaiRepo.findById(id).get();
-        pegawaiDB.setStatus(false);
+        pegawaiDB.setStatus(true);
 
         return pegawaiRepo.save(pegawaiDB);
     }

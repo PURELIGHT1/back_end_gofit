@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:8081/")
 public class JadwalUmumController {
 
     @Autowired

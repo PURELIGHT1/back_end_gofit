@@ -23,8 +23,4 @@ public interface PegawaiService {
     Pegawai updateFotoPegawai(String id, String foto);
 
     List<Pegawai> findByEmail(String email);
-
-    Integer findGenerateIdPegawai(Integer id);
-
-    Integer updateGenereteIdPegawai(Integer counter, Integer id);
 }

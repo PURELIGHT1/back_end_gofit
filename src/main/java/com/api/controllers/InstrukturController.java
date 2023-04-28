@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.api.exception.instruktur.InstrukturExceptionNotFound;
 import com.api.models.entities.Instruktur;
+import com.api.models.repos.InstrukturRepo;
 import com.api.services.InstrukturService;
 import com.api.util.FileDownloadUtils;
 import com.api.util.FileUploadResponse;
@@ -37,29 +38,36 @@ public class InstrukturController {
     @Autowired
     private InstrukturService instrukturService;
 
+    @Autowired
+    private InstrukturRepo repo;
+
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/instrukturs")
-    public ResponseEntity<Object> findAllPromo() {
+    public ResponseEntity<Object> findAllInstruktur() {
 
         return ResponseHandler.responseEntity("Berhasil mengambil seluruh data", HttpStatus.OK,
                 instrukturService.findAll());
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/instrukturs/{id}")
-    public ResponseEntity<Object> getByIdPromo(@PathVariable("id") String id) {
+    public ResponseEntity<Object> getByIdInstruktur(@PathVariable("id") String id) {
 
         return ResponseHandler.responseEntity("Berhasil mengambil data", HttpStatus.OK,
                 instrukturService.findByIdInstruktur(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PostMapping(value = "instrukturs", consumes = { "application/xml", "application/json" })
-    public ResponseEntity<Object> createPromo(@RequestBody @Validated Instruktur instruktur) {
+    public ResponseEntity<Object> createInstruktur(@RequestBody @Validated Instruktur instruktur) {
 
         return ResponseHandler.responseEntity("Berhasil menambah data", HttpStatus.CREATED,
                 instrukturService.createInstruktur(instruktur));
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PutMapping("/instrukturs/{id}")
-    public ResponseEntity<Object> updatePromo(@PathVariable("id") String id,
+    public ResponseEntity<Object> updateInstruktur(@PathVariable("id") String id,
             @RequestBody @Validated Instruktur instruktur) {
 
         return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.CREATED,
@@ -67,25 +75,33 @@ public class InstrukturController {
 
     }
 
-    @DeleteMapping("/instrukturs/{id}")
-    public ResponseEntity<Object> deleteById(@PathVariable("id") String id) {
+    @CrossOrigin(origins = "http://localhost:8081/")
+    @PutMapping("/instrukturs/status/{id}")
+    public ResponseEntity<Object> updateInstrukturStatus(@PathVariable("id") String id) {
 
-        Instruktur promoDB = instrukturService.findByIdInstruktur(id);
-        instrukturService.deleteInstruktur(id);
+        Instruktur instrukturDB = instrukturService.findByIdInstruktur(id);
+        if (instrukturDB == null) {
+            return ResponseHandler.responseEntity("Data tidak ditemukan", HttpStatus.NOT_FOUND, null);
+        }
+        instrukturDB.setStatus(true);
+        repo.save(instrukturDB);
 
-        return ResponseHandler.responseEntity("Berhasil hapus data", HttpStatus.OK,
-                promoDB);
+        return ResponseHandler.responseEntity(
+                "Berhasil mengubah status data", HttpStatus.OK,
+                instrukturDB);
 
     }
 
-    @PutMapping("/instrukturs/status/{id}")
-    public ResponseEntity<Object> updatePromoStatus(@PathVariable("id") String id) {
+    @CrossOrigin(origins = "http://localhost:8081/")
+    @DeleteMapping("/instrukturs/{id}")
+    public ResponseEntity<Object> deleteInstrukturStatus(@PathVariable("id") String id) {
 
-        return ResponseHandler.responseEntity("Berhasil mengubah status", HttpStatus.ACCEPTED,
+        return ResponseHandler.responseEntity("Berhasil hapus data", HttpStatus.ACCEPTED,
                 instrukturService.updateInstrukturStatus(id));
 
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @PostMapping(value = "instrukturs/foto/{id}")
     public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("foto") MultipartFile multipartFile,
             @PathVariable("id") String id)
@@ -104,6 +120,7 @@ public class InstrukturController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("instrukturs/foto/{fileCode}")
     public ResponseEntity<?> downloadFile(@PathVariable("fileCode") String fileCode) {
 
@@ -128,6 +145,7 @@ public class InstrukturController {
                 .body(resource);
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/instrukturs/email/{email}")
     public ResponseEntity<Object> getInstrukturByEmail(@PathVariable("email") String email) {
 
@@ -135,6 +153,7 @@ public class InstrukturController {
                 instrukturService.findByEmail(email));
     }
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/instrukturs/inisial/{inisial}")
     public ResponseEntity<Object> getInstrukturByInisial(@PathVariable("inisial") String inisial) {
 
