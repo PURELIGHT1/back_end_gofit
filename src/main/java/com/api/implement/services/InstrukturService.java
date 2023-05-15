@@ -1,7 +1,8 @@
-package com.api.services;
+package com.api.implement.services;
 
 import java.util.List;
 
+import com.api.dto.UbahPasswordRequest;
 import com.api.models.entities.Instruktur;
 
 public interface InstrukturService {
@@ -23,4 +24,6 @@ public interface InstrukturService {
     List<Instruktur> findByEmail(String email);
 
     List<Instruktur> findByInisial(String inisial);
+
+    Instruktur ubahPasswordInstruktur(String id, UbahPasswordRequest request);
 }

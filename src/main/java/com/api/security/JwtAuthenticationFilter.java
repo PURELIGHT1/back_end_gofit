@@ -70,9 +70,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
         filterChain.doFilter(request, response);
 
     }

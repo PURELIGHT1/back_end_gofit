@@ -10,15 +10,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "booking_gym")
+@AllArgsConstructor(staticName = "build")
+@NoArgsConstructor
 public class BookingGym {
-
-    // @OneToMany(mappedBy = "booking_gym")
-    // private Set<PresensiGym> presensiGym;
 
     @Id
     @Column(name = "id_booking_gym", length = 50)
@@ -32,6 +33,6 @@ public class BookingGym {
     @Temporal(TemporalType.TIMESTAMP)
     private Date tglBooking;
 
-    @Column(name = "status_booking_gym")
-    private Boolean status;
+    @Column(name = "status_booking_gym", length = 5)
+    private String status;
 }

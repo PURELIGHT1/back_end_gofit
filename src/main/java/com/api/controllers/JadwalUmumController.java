@@ -19,18 +19,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.dto.ResponseData;
+import com.api.implement.services.InstrukturService;
+import com.api.implement.services.JadwalUmumService;
+import com.api.implement.services.KelasService;
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.JadwalUmum;
 import com.api.models.entities.Kelas;
-import com.api.services.InstrukturService;
-import com.api.services.JadwalUmumService;
-import com.api.services.KelasService;
 
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api")
-@CrossOrigin(origins = "http://localhost:8081/")
+@CrossOrigin(origins = "http://localhost:5173/")
 public class JadwalUmumController {
 
     @Autowired
@@ -120,7 +120,7 @@ public class JadwalUmumController {
         kelas = kelasService.findByIdKelas(idKelas);
         jadwalUmum.setKelas(kelas);
 
-        jadwalUmum.setStatus(true);
+        jadwalUmum.setStatus("A");
 
         responseData.getMessage().add("Berhasil menambah Data");
         responseData.setStatus(true);

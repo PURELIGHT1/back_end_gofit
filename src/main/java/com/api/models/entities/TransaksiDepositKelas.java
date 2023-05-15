@@ -1,6 +1,5 @@
 package com.api.models.entities;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -52,9 +51,9 @@ public class TransaksiDepositKelas {
     @Column(name = "sisa_kelas")
     private Integer sisaKelas;
 
-    @Column(name = "total_deposit_kelas")
-    private BigDecimal totalDeposit;
+    @Column(name = "total_deposit_kelas", length = 255)
+    private Integer totalDeposit;
 
-    @Column(name = "status_deposit_kelas")
-    private Boolean status;
+    @Column(name = "status_deposit_kelas", length = 5)
+    private String status;
 }

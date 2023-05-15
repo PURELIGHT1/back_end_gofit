@@ -1,7 +1,6 @@
 package com.api.models.entities;
 
 import java.util.Date;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -16,9 +15,6 @@ import lombok.Data;
 @Data
 @Table(name = "booking_kelas")
 public class BookingKelas {
-
-    // @OneToMany(mappedBy = "booking_kelas")
-    // private Set<PresensiKelas> presensiKelas;
 
     @Id
     @Column(name = "id_booking_kelas", length = 50)
@@ -36,6 +32,6 @@ public class BookingKelas {
     @Temporal(TemporalType.TIMESTAMP)
     private Date tglBooking;
 
-    @Column(name = "status_booking_kelas")
-    private Boolean status;
+    @Column(name = "status_booking_kelas", length = 5)
+    private String status;
 }

@@ -21,6 +21,6 @@ public class InstrukturUserDto {
     private Integer jlhHadir;
     private Integer jlhLibur;
     private Integer jlhTerlambat;
-    private boolean status;
-    private Integer creator;
+    private String status;
+    private String creator;
 }

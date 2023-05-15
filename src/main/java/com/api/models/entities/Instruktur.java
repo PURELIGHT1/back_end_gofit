@@ -54,11 +54,11 @@ public class Instruktur {
     @Column(name = "jumlah_terlambat_instruktur", columnDefinition = "integer default 0")
     private Integer jlhTerlambat;
 
-    @Column(name = "status_instruktur")
-    private Boolean status;
+    @Column(name = "status_instruktur", length = 5)
+    private String status;
 
     @Column(name = "cretor_instruktur")
-    private Integer creator;
+    private String creator;
 
     @Column(name = "modifier_instruktur")
     private Integer modifier;

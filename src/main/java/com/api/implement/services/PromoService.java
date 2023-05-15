@@ -1,4 +1,4 @@
-package com.api.services;
+package com.api.implement.services;
 
 import java.util.List;
 import com.api.models.entities.Promo;

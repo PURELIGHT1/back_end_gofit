@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,9 +26,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.api.dto.MemberRequest;
+import com.api.dto.UbahPasswordRequest;
 import com.api.exception.member.*;
+import com.api.implement.services.MemberService;
 import com.api.models.entities.Member;
-import com.api.services.MemberService;
+import com.api.models.entities.User;
+import com.api.models.repos.MemberRepo;
+import com.api.models.repos.UserRepo;
 import com.api.util.FileDownloadUtils;
 import com.api.util.FileUploadResponse;
 import com.api.util.FileUploadUtil;
@@ -37,7 +44,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("api")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:5173/")
 public class MemberController {
 
     private final PDFGeneratorService pdfGeneratorService;
@@ -47,61 +54,107 @@ public class MemberController {
     }
 
     @Autowired
-    private MemberService MemberService;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @CrossOrigin(origins = "http://localhost:8081/")
+    @Autowired
+    private MemberService memberService;
+
+    @Autowired
+    private UserRepo userRepo;
+
+    @Autowired
+    private MemberRepo repo;
+
     @GetMapping("/members")
     public ResponseEntity<Object> findAllMember() {
 
         return ResponseHandler.responseEntity("Berhasil mengambil seluruh data", HttpStatus.OK,
-                MemberService.findAll());
+                memberService.findAll());
     }
 
-    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/members/{id}")
     public ResponseEntity<Object> getByIdMember(@PathVariable("id") String id) {
 
         return ResponseHandler.responseEntity("Berhasil mengambil data", HttpStatus.OK,
-                MemberService.findByIdMember(id));
+                memberService.findByIdMember(id));
     }
 
-    @CrossOrigin(origins = "http://localhost:8081/")
+    @GetMapping("/members/find/{nama}")
+    public ResponseEntity<Object> getByNamaMember(@PathVariable("nama") String nama) {
+        List<Member> memberDB = repo.findByNama(nama);
+        if (memberDB.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        return ResponseHandler.responseEntity("Berhasil mengambil data",
+                HttpStatus.OK,
+                memberDB);
+    }
+
+    // @GetMapping("/members/aktivasi")
+    // public ResponseEntity<Object> getByNamaMember() {
+    // return ResponseHandler.responseEntity("Berhasil mengambil data",
+    // HttpStatus.OK,
+    // userRepo.findByAktivasi());
+    // }
+
     @PostMapping(value = "members", consumes = { "application/xml", "application/json" })
     public ResponseEntity<Object> createMember(@RequestBody @Validated Member member) {
 
+        if (userRepo.findByUserLogin(member.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body(null);
+        }
         return ResponseHandler.responseEntity("Berhasil menambah data", HttpStatus.CREATED,
-                MemberService.createMember(member));
+                memberService.createMember(member));
     }
 
-    @CrossOrigin(origins = "http://localhost:8081/")
     @PutMapping("/members/{id}")
     public ResponseEntity<Object> updateMember(@PathVariable("id") String id,
             @RequestBody @Validated Member member) {
 
         return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.CREATED,
-                MemberService.updateMember(id, member));
+                memberService.updateMember(id, member));
 
     }
 
-    @CrossOrigin(origins = "http://localhost:8081/")
-    @PutMapping("/members/status/{id}")
-    public ResponseEntity<Object> updateMemberStatus(@PathVariable("id") String id) {
+    @PutMapping("/members/edit-password/{id}")
+    public ResponseEntity<Object> updatePasswordInstruktur(@PathVariable("id") String id,
+            @RequestBody @Validated UbahPasswordRequest request) {
 
-        return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.OK,
-                MemberService.updateMemberStatus(id));
+        return ResponseHandler.responseEntity("Berhasil ubah password",
+                HttpStatus.CREATED, memberService.ubahPasswordMember(id, request));
 
     }
 
-    @CrossOrigin(origins = "http://localhost:8081/")
+    // @PutMapping("/members/status/{id}")
+    // public ResponseEntity<Object> updateMemberStatus(@PathVariable("id") String
+    // id) {
+
+    // return ResponseHandler.responseEntity("Berhasil mengubah data",
+    // HttpStatus.OK,
+    // memberService.updateMemberStatus(id));
+
+    // }
+
+    // @DeleteMapping("/members/{id}")
+    // public ResponseEntity<Object> deleteMemberStatus(@PathVariable("id") String
+    // id) {
+
+    // return ResponseHandler.responseEntity("Berhasil hapus data",
+    // HttpStatus.ACCEPTED,
+    // memberService.updateMemberStatus(id));
+
+    // }
     @DeleteMapping("/members/{id}")
-    public ResponseEntity<Object> deleteMemberStatus(@PathVariable("id") String id) {
+    public ResponseEntity<Object> deleteInstrukturStatus(@PathVariable("id") String id) {
 
-        return ResponseHandler.responseEntity("Berhasil hapus data", HttpStatus.ACCEPTED,
-                MemberService.updateMemberStatus(id));
+        Member memberDB = memberService.findByIdMember(id);
+        memberService.deleteMember(id);
+        return ResponseHandler.responseEntity("Berhasil hapus data",
+                HttpStatus.ACCEPTED,
+                memberDB);
 
     }
 
-    @CrossOrigin(origins = "http://localhost:8081/")
     @PostMapping("members/foto/{id}")
     public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("foto") MultipartFile multipartFile,
             @PathVariable("id") String id)
@@ -115,12 +168,11 @@ public class MemberController {
         response.setFileName(foto);
         response.setDownloadUri("/Members/foto/" + filecode);
         response.setSize(size);
-        MemberService.updateFotoMember(id, filecode + "-" + foto);
+        memberService.updateFotoMember(id, filecode + "-" + foto);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("members/foto/{fileCode}")
     public ResponseEntity<?> downloadFile(@PathVariable("fileCode") String fileCode) {
 
@@ -148,22 +200,43 @@ public class MemberController {
                 .body(resource);
     }
 
-    // @PutMapping("/members/resetPassword/{id}")
-    // public ResponseEntity<Object> resetPasswordMember(@PathVariable("id") String
-    // id) {
+    @PutMapping("/members/resetPassword/{id}")
+    public ResponseEntity<Object> resetPasswordMember(@PathVariable("id") String id) {
 
-    // return ResponseHandler.responseEntity("Berhasil mereset password",
+        return ResponseHandler.responseEntity("Berhasil mereset password",
+                HttpStatus.ACCEPTED,
+                memberService.updatePasswordMember(id));
+
+    }
+
+    // @PutMapping("/members/reset-password/{id}")
+    // public ResponseEntity<Object> resetPassword(@PathVariable("id") String id) {
+    // if (repo.findById(id).isEmpty()) {
+    // throw new MemberExceptionBadRequest("Data tidak ditemukan");
+    // }
+
+    // Member member = repo.findById(id).get();
+    // User user = userRepo.findUserByMember(member);
+
+    // DateFormat dateFormat = new SimpleDateFormat("d-MM-Y");
+    // String pass = dateFormat.format(member.getTglLahir());
+
+    // String encodedPassword = bCryptPasswordEncoder.encode(pass);
+
+    // user.setPasswordLogin(encodedPassword);
+    // User userDB = userRepo.save(user);
+
+    // return ResponseHandler.responseEntity("Berhasil mengubah password",
     // HttpStatus.ACCEPTED,
-    // MemberService.updateMemberStatus(id));
+    // userDB);
 
     // }
 
-    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/members/pdf")
     public void generateCardMember(HttpServletResponse response) {
         response.setContentType("application/pdf");
         // DateFormat dateFormat = new SimpleDateFormat("DD-MM-YY");
-        DateFormat dateFormat = new SimpleDateFormat("YY.MM");
+        DateFormat dateFormat = new SimpleDateFormat("Y-MM-dd");
         Date date = new Date();
         String currentDateTime = dateFormat.format(date);
 

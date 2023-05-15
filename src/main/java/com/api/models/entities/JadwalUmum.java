@@ -1,5 +1,6 @@
 package com.api.models.entities;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -34,14 +35,14 @@ public class JadwalUmum {
 
     @Column(name = "tgl_jadwal_umum")
     @Temporal(TemporalType.DATE)
-    private Date tglJadwal;
+    private LocalDate tglJadwal;
 
     @Column(name = "hari_jadwal_umum", length = 20)
     private String hariJadwal;
 
-    @Column(name = "sesi_jadwal_umum")
-    private String sesiJadwal;
+    @Column(name = "sesi_jadwal_umum", length = 5)
+    private Integer sesiJadwal;
 
-    @Column(name = "status_jadwal_umum")
-    private Boolean status;
+    @Column(name = "status_jadwal_umum", length = 5)
+    private String status;
 }

@@ -34,11 +34,10 @@ public class PresensiKelas {
     private Member member;
 
     @Column(name = "tgl_presensi_kelas")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date tglpresensi;
+    private String tglpresensi;
 
     @Column(name = "cretor_presensi")
-    private Integer creator;
+    private String creator;
 
     @Column(name = "modifier_presensi")
     private Integer modifier;
@@ -47,6 +46,6 @@ public class PresensiKelas {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified_time;
 
-    @Column(name = "status_presensi_kelas")
-    private Boolean status;
+    @Column(name = "status_presensi_kelas", length = 5)
+    private String status;
 }

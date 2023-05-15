@@ -4,20 +4,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.catalina.connector.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.api.dto.UbahPasswordRequest;
 import com.api.exception.instruktur.InstrukturExceptionBadRequest;
 import com.api.exception.instruktur.InstrukturExceptionNotFound;
 import com.api.implement.builder.GenerateImpl;
+import com.api.implement.services.InstrukturService;
 import com.api.models.UserRole;
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.User;
 import com.api.models.repos.InstrukturRepo;
 import com.api.models.repos.TokenRepo;
 import com.api.models.repos.UserRepo;
-import com.api.services.InstrukturService;
 
 @Service
 public class InstrukturImpl implements InstrukturService {
@@ -87,19 +89,13 @@ public class InstrukturImpl implements InstrukturService {
 
         instrukturDB.setTglLahir(instruktur.getTglLahir());
         instrukturDB.setNoHp(instruktur.getNoHp());
-        if (Objects.nonNull(instruktur.getNoHp()) &&
-                !"".equalsIgnoreCase(instruktur.getNoHp())) {
-            instrukturDB.setNoHp(instruktur.getNoHp());
-        } else {
-            throw new InstrukturExceptionBadRequest("Nomor Handphone tidak boleh kosong");
-        }
 
         // Id Instruktur
         Integer counter = generateImpl.findGenerateIdInstruktur(1);
         if (counter == 0) {
             counter += 1;
-            Integer changeCounter = generateImpl.updateGenereteIdInstruktur(counter);
-            instrukturDB.setId("P0" + changeCounter + "-" + instruktur.getInisial());
+            generateImpl.updateGenereteIdInstruktur(counter);
+            instrukturDB.setId("P0" + counter + "-" + instruktur.getInisial());
         } else {
             if (counter < 9) {
                 counter += 1;
@@ -116,8 +112,8 @@ public class InstrukturImpl implements InstrukturService {
         instrukturDB.setJlhHadir(0);
         instrukturDB.setJlhLibur(0);
         instrukturDB.setJlhTerlambat(0);
-        instrukturDB.setStatus(true);
-        instrukturDB.setCreator(1);
+        instrukturDB.setStatus("A");
+        instrukturDB.setCreator(instruktur.getCreator());
         instrukturRepo.save(instrukturDB);
 
         // insert to user
@@ -221,12 +217,25 @@ public class InstrukturImpl implements InstrukturService {
     }
 
     @Override
+    public Instruktur ubahPasswordInstruktur(String id, UbahPasswordRequest request) {
+        Instruktur instrukturDB = findByIdInstruktur(id);
+
+        String password = request.getPasswordBaru();
+        String encodedPassword = bCryptPasswordEncoder.encode(password);
+        Integer ubah = instrukturRepo.updatePassword(encodedPassword, instrukturDB);
+        if (ubah <= 0) {
+            throw new InstrukturExceptionBadRequest("Password gagal diubah");
+        }
+        return instrukturDB;
+    }
+
+    @Override
     public Instruktur updateInstrukturStatus(String id) {
         if (instrukturRepo.findById(id).isEmpty()) {
             throw new InstrukturExceptionNotFound("Data tidak ditemukan");
         }
         Instruktur instrukturDB = instrukturRepo.findById(id).get();
-        instrukturDB.setStatus(false);
+        instrukturDB.setStatus("I");
 
         return instrukturRepo.save(instrukturDB);
     }

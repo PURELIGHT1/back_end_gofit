@@ -24,16 +24,15 @@ public class PresensiInstruktur {
     @JoinColumn(name = "id_instruktur", nullable = false)
     private Instruktur instruktur;
 
-    @Column(name = "tgl_presensi_instruktur")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date tglpresensi;
+    @Column(name = "tgl_presensi_instruktur", length = 20)
+    private String tglpresensi;
 
     @Column(name = "sesi_mulai_presensi_instruktur")
-    private String mulaiGym;
+    private Integer mulaiGym;
 
     @Column(name = "sesi_akhir_presensi_instruktur")
-    private String akhirGym;
+    private Integer akhirGym;
 
-    @Column(name = "status_presensi_instruktur")
-    private Boolean status;
+    @Column(name = "status_presensi_instruktur", length = 5)
+    private String status;
 }

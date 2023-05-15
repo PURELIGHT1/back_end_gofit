@@ -1,6 +1,5 @@
 package com.api.implement;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -8,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.api.exception.kelas.*;
+import com.api.implement.services.KelasService;
 import com.api.models.entities.Kelas;
 import com.api.models.repos.KelasRepo;
-import com.api.services.KelasService;
 
 @Service
 public class KelasImpl implements KelasService {
@@ -29,7 +28,7 @@ public class KelasImpl implements KelasService {
             throw new KelasExceptionBadRequest("Nama tidak boleh kosong");
         }
 
-        if (kelas.getHarga().equals(BigDecimal.ZERO)) {
+        if (kelas.getHarga().equals(0)) {
             throw new KelasExceptionBadRequest("Harga tidak boleh kurang atau sama dengan 0");
         } else {
             kelasDB.setHarga(kelas.getHarga());
@@ -77,7 +76,7 @@ public class KelasImpl implements KelasService {
             throw new KelasExceptionBadRequest("Nama tidak boleh kosong");
         }
 
-        if (kelas.getHarga().equals(BigDecimal.ZERO)) {
+        if (kelas.getHarga().equals(0)) {
             throw new KelasExceptionBadRequest("Harga tidak boleh kurang atau sama dengan 0");
         } else {
             kelasDB.setHarga(kelas.getHarga());

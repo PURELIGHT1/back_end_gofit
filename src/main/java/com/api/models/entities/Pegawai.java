@@ -15,7 +15,7 @@ import lombok.ToString;
 
 @Entity(name = "pegawai")
 @Data
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "build")
 @NoArgsConstructor
 @ToString
 @Table(name = "pegawai")
@@ -34,7 +34,7 @@ public class Pegawai {
     @Column(name = "email_pegawai", length = 100)
     private String email;
 
-    @Column(name = "alamat_pegawai", length = 100)
+    @Column(name = "alamat_pegawai", length = 300)
     private String alamat;
 
     @Column(name = "tgl_lahir_pegawai")
@@ -44,11 +44,11 @@ public class Pegawai {
     @Column(name = "no_telp_pegawai", length = 20)
     private String noHp;
 
-    @Column(name = "status_pegawai")
-    private Boolean status;
+    @Column(name = "status_pegawai", length = 5)
+    private String status;
 
     @Column(name = "cretor_pegawai")
-    private Integer creator;
+    private String creator;
 
     @Column(name = "modifier_pegawai")
     private Integer modifier;

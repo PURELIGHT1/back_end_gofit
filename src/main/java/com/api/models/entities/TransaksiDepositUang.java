@@ -1,6 +1,5 @@
 package com.api.models.entities;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -33,16 +32,16 @@ public class TransaksiDepositUang {
     @JoinColumn(name = "id_promo", nullable = false)
     private Promo promo;
 
-    @Column(name = "jlh_deposit_uang")
-    private BigDecimal jlhDeposit;
+    @Column(name = "jlh_deposit_uang", length = 255)
+    private Integer jlhDeposit;
 
     @Column(name = "tgl_deposit_uang")
     @Temporal(TemporalType.TIMESTAMP)
     private Date tglDeposit;
 
-    @Column(name = "total_deposit_uang")
-    private BigDecimal totalDeposit;
+    @Column(name = "total_deposit_uang", length = 255)
+    private Integer totalDeposit;
 
-    @Column(name = "status_deposit_uang")
-    private Boolean status;
+    @Column(name = "status_deposit_uang", length = 5)
+    private String status;
 }

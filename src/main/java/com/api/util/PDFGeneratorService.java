@@ -1,6 +1,9 @@
 package com.api.util;
 
 import java.awt.Color;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 // import java.io.IOException;
 
@@ -32,6 +35,10 @@ public class PDFGeneratorService {
             document.add(paragraph);
 
             // Image icon =
+
+            // DateFormat dateFormat = new SimpleDateFormat("EE, dd/MM/yyyy HH:mm:ss");
+            // Date date = new Date();
+            // String currentDateTime = dateFormat.format(date);
 
             Font fontParagraph = FontFactory.getFont(FontFactory.HELVETICA);
             fontParagraph.setSize(18);

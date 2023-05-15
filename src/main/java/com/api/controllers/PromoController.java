@@ -17,16 +17,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.dto.ResponseData;
+import com.api.implement.services.PromoService;
 import com.api.models.entities.Promo;
 import com.api.models.repos.PromoRepo;
-import com.api.services.PromoService;
 import com.api.util.ResponseHandler;
 
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:5173/")
 public class PromoController {
 
         @Autowired
@@ -35,7 +35,6 @@ public class PromoController {
         @Autowired
         private PromoRepo repo;
 
-        @CrossOrigin(origins = "http://localhost:8081/")
         @PostMapping("/promos")
         public ResponseEntity<ResponseData<Promo>> createPromo(@RequestBody @Valid Promo promo, Errors errors) {
                 ResponseData<Promo> responseData = new ResponseData<>();
@@ -59,7 +58,6 @@ public class PromoController {
                 // return ResponseEntity.ok(promoService.savePromo(promoRequest));
         }
 
-        @CrossOrigin(origins = "http://localhost:8081/")
         @PutMapping("/promos/{id}")
         public ResponseEntity<Object> updatePromo(@PathVariable("id") Integer id,
                         @RequestBody @Validated Promo promo) {
@@ -70,7 +68,6 @@ public class PromoController {
 
         }
 
-        @CrossOrigin(origins = "http://localhost:8081/")
         @PutMapping("/promos/status/{id}")
         public ResponseEntity<Object> updatePromoStatus(@PathVariable("id") Integer id) {
 
@@ -80,7 +77,6 @@ public class PromoController {
 
         }
 
-        @CrossOrigin(origins = "http://localhost:8081/")
         @GetMapping("/promos/{id}")
         public ResponseEntity<Object> getByIdPromo(@PathVariable("id") Integer id) {
 
@@ -88,7 +84,6 @@ public class PromoController {
                                 promoService.findByIdPromo(id));
         }
 
-        @CrossOrigin(origins = "http://localhost:8081/")
         @GetMapping("/promos")
         public ResponseEntity<Object> findAllPromo() {
 
@@ -96,7 +91,7 @@ public class PromoController {
                                 promoService.findAll());
         }
 
-        // @CrossOrigin(origins = "http://localhost:8081/")
+        // @CrossOrigin(origins = "http://localhost:5173/")
         // @DeleteMapping("/promos/{id}")
         // public ResponseEntity<Object> deleteById(@PathVariable("id") Integer id) {
 
@@ -107,7 +102,6 @@ public class PromoController {
 
         // }
 
-        @CrossOrigin(origins = "http://localhost:8081/")
         @GetMapping("/promos/jenis/{jenis}")
         public ResponseEntity<Object> getPromoByJenis(@PathVariable("jenis") String jenis) {
 
@@ -115,14 +109,12 @@ public class PromoController {
                                 promoService.findByjenis(jenis));
         }
 
-        @CrossOrigin(origins = "http://localhost:8081/")
         @DeleteMapping("/promos/{id}")
         public ResponseEntity<Object> deletePromoStatus(@PathVariable("id") Integer id) {
                 Promo promoDB = promoService.findByIdPromo(id);
                 if (promoDB == null) {
                         return ResponseHandler.responseEntity("Data tidak ditemukan", HttpStatus.NOT_FOUND, null);
                 }
-                promoDB.setStatus(false);
                 repo.save(promoDB);
                 return ResponseHandler.responseEntity("Berhasil hapus data", HttpStatus.ACCEPTED,
                                 promoDB);

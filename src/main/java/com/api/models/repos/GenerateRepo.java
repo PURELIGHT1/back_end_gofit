@@ -21,6 +21,9 @@ public interface GenerateRepo extends JpaRepository<GenerateTabel, Integer> {
     @Query("SELECT generateStruk FROM generate gr WHERE gr.id = ?1")
     public Integer findgenerateStrukByGenerateTabel(Integer id);
 
+    @Query("SELECT generateJadwal FROM generate gr WHERE gr.id = ?1")
+    public boolean findgenerateJadwalByGenerateTabel(Integer id);
+
     @Modifying
     @Transactional
     @Query("UPDATE generate gr SET gr.generateIdInstruktur = ?1 WHERE gr.id = 1")
@@ -40,4 +43,9 @@ public interface GenerateRepo extends JpaRepository<GenerateTabel, Integer> {
     @Transactional
     @Query("UPDATE generate gr SET gr.generateStruk = ?1 WHERE gr.id = 1")
     public Integer updateGenereteStrukByGenerateTabel(Integer counter);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE generate gr SET gr.generateJadwal = ?1 WHERE gr.id = 1")
+    public Integer updateGenereteJadwalByGenerateTabel(Boolean statusGenerate);
 }

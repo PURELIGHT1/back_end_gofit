@@ -40,10 +40,10 @@ public class Promo {
     @Temporal(TemporalType.DATE)
     private Date akhir;
 
-    @Column(name = "deskripsi_promo")
+    @Column(name = "deskripsi_promo", length = 500)
     private String deskripsi;
 
-    @Column(name = "status_promo")
-    private boolean status;
+    @Column(name = "status_promo", length = 5)
+    private String status;
 
 }

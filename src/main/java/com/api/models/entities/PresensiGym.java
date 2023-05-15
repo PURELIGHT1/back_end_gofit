@@ -10,8 +10,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Data
 @Table(name = "presensi_gym")
@@ -34,7 +38,7 @@ public class PresensiGym {
     private Member member;
 
     @Column(name = "tgl_presensi_gym")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date tglpresensi;
 
     @Column(name = "sesi_mulai_presensi")
@@ -43,6 +47,6 @@ public class PresensiGym {
     @Column(name = "sesi_akhir_presensi")
     private String akhirGym;
 
-    @Column(name = "status_presensi_gym")
-    private Boolean status;
+    @Column(name = "status_presensi_gym", length = 5)
+    private String status;
 }

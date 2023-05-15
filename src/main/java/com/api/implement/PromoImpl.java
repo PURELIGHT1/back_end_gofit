@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.api.exception.promo.PromoExceptionBadRequest;
 import com.api.exception.promo.PromoExceptionNotFound;
+import com.api.implement.services.PromoService;
 import com.api.models.entities.Promo;
 import com.api.models.repos.PromoRepo;
-import com.api.services.PromoService;
 
 @Service
 public class PromoImpl implements PromoService {
@@ -21,7 +21,7 @@ public class PromoImpl implements PromoService {
             throw new PromoExceptionNotFound("Data tidak ditemukan");
         }
         Promo promoDB = promoRepo.findById(id).get();
-        promoDB.setStatus(true);
+        // promoDB.setStatus(true);
 
         return promoRepo.save(promoDB);
     }
@@ -45,7 +45,7 @@ public class PromoImpl implements PromoService {
         } else {
             throw new PromoExceptionBadRequest("Jenis tidak boleh kosong");
         }
-        promoDB.setStatus(true);
+        // promoDB.setStatus(true);
         promoDB.setAkhir(promo.getAkhir());
         promoDB.setMulai(promo.getMulai());
 

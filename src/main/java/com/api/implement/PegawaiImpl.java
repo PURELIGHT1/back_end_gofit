@@ -8,15 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.api.dto.UbahPasswordRequest;
 import com.api.exception.pegawai.*;
 import com.api.implement.builder.GenerateImpl;
+import com.api.implement.services.PegawaiService;
 import com.api.models.UserRole;
 import com.api.models.entities.Pegawai;
 import com.api.models.entities.User;
 import com.api.models.repos.PegawaiRepo;
 import com.api.models.repos.TokenRepo;
 import com.api.models.repos.UserRepo;
-import com.api.services.PegawaiService;
 
 @Service
 public class PegawaiImpl implements PegawaiService {
@@ -90,9 +91,22 @@ public class PegawaiImpl implements PegawaiService {
         }
 
         pegawaiDB.setFoto("profile.png");
-        pegawaiDB.setStatus(true);
-        pegawaiDB.setCreator(1);
+        pegawaiDB.setStatus("A");
+        pegawaiDB.setCreator(pegawai.getCreator());
         return pegawaiRepo.save(pegawaiDB);
+    }
+
+    @Override
+    public Pegawai ubahPasswordPegawai(String id, UbahPasswordRequest request) {
+        Pegawai pegawaiDB = findByIdPegawai(id);
+
+        String password = request.getPasswordBaru();
+        String encodedPassword = bCryptPasswordEncoder.encode(password);
+        Integer ubah = pegawaiRepo.updatePassword(encodedPassword, pegawaiDB);
+        if (ubah <= 0) {
+            throw new PegawaiExceptionBadRequest("Password gagal diubah");
+        }
+        return pegawaiDB;
     }
 
     @Override
@@ -105,7 +119,7 @@ public class PegawaiImpl implements PegawaiService {
         // insert MO to user
         if ("KASIR".equalsIgnoreCase(role)) {
             User userDB = new User();
-            userDB.setUserLogin(pegawaiDB.getId());
+            userDB.setUserLogin(pegawaiDB.getEmail());
             String encodedPassword = bCryptPasswordEncoder.encode(pegawaiDB.getNoHp());
             userDB.setPasswordLogin(encodedPassword);
 
@@ -116,7 +130,7 @@ public class PegawaiImpl implements PegawaiService {
 
         if ("MO".equalsIgnoreCase(role)) {
             User userDB = new User();
-            userDB.setUserLogin(pegawaiDB.getId());
+            userDB.setUserLogin(pegawaiDB.getEmail());
             String encodedPassword = bCryptPasswordEncoder.encode(pegawaiDB.getNoHp());
             userDB.setPasswordLogin(encodedPassword);
 
@@ -227,7 +241,7 @@ public class PegawaiImpl implements PegawaiService {
             throw new PegawaiExceptionNotFound("Data tidak ditemukan");
         }
         Pegawai pegawaiDB = pegawaiRepo.findById(id).get();
-        pegawaiDB.setStatus(true);
+        pegawaiDB.setStatus("F");
 
         return pegawaiRepo.save(pegawaiDB);
     }

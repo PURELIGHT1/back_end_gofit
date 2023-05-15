@@ -1,6 +1,5 @@
 package com.api.models.entities;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -11,10 +10,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@AllArgsConstructor(staticName = "build")
+@NoArgsConstructor
 @Table(name = "transaksi_aktivasi")
 public class TransaksiAktivasi {
 
@@ -30,17 +33,17 @@ public class TransaksiAktivasi {
     @JoinColumn(name = "id_member", nullable = false)
     private Member member;
 
-    @Column(name = "jlh_bayar_aktivasi")
-    private BigDecimal jlhBayar;
+    @Column(name = "jlh_bayar_aktivasi", length = 255)
+    private Integer jlhBayar;
 
     @Column(name = "tgl_aktivasi")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date tglAktiviasi;
 
     @Column(name = "tgl_berlaku_aktivasi")
     @Temporal(TemporalType.DATE)
     private Date tglBerlaku;
 
-    @Column(name = "status_aktivasi")
-    private Boolean status;
+    @Column(name = "status_aktivasi", length = 5)
+    private String status;
 }

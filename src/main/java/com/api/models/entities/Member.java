@@ -1,6 +1,5 @@
 package com.api.models.entities;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -44,14 +43,14 @@ public class Member {
     @Column(name = "no_telp_member", length = 20)
     private String noHp;
 
-    @Column(name = "sisa_deposit_member")
-    private BigDecimal sisaDeposit;
+    @Column(name = "sisa_deposit_member", length = 255)
+    private Integer sisaDeposit;
 
-    @Column(name = "status_member")
-    private Boolean status;
+    @Column(name = "status_member", length = 5)
+    private String status;
 
     @Column(name = "cretor_member")
-    private Integer creator;
+    private String creator;
 
     @Column(name = "modifier_member")
     private Integer modifier;

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ResponseData<T> {
-    private boolean status;
+    private Boolean status;
     private List<String> message = new ArrayList<>();
     private T data;
 }

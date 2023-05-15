@@ -1,5 +1,6 @@
 package com.api.models.entities;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -21,11 +22,11 @@ public class JadwalHarian {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "id_instruktur", nullable = false)
+    @JoinColumn(name = "id_instruktur", nullable = true)
     private Instruktur instruktur;
 
     @ManyToOne
-    @JoinColumn(name = "instruktur_pengganti", nullable = false)
+    @JoinColumn(name = "instruktur_pengganti", nullable = true)
     private Instruktur instrukturPeganti;
 
     @ManyToOne
@@ -34,14 +35,14 @@ public class JadwalHarian {
 
     @Column(name = "tgl_jadwal_harian")
     @Temporal(TemporalType.DATE)
-    private Date tglJadwal;
+    private LocalDate tglJadwal;
 
     @Column(name = "hari_jadwal_harian", length = 20)
     private String hariJadwal;
 
-    @Column(name = "sesi_jadwal_harian")
-    private String sesiJadwal;
+    @Column(name = "sesi_jadwal_harian", length = 5)
+    private Integer sesiJadwal;
 
-    @Column(name = "status_jadwal_harian")
-    private Boolean status;
+    @Column(name = "status_jadwal_harian", length = 5)
+    private String status;
 }

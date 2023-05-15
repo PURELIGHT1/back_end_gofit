@@ -1,7 +1,8 @@
-package com.api.services;
+package com.api.implement.services;
 
 import java.util.List;
 
+import com.api.dto.UbahPasswordRequest;
 import com.api.models.entities.Pegawai;
 
 public interface PegawaiService {
@@ -23,4 +24,6 @@ public interface PegawaiService {
     Pegawai updateFotoPegawai(String id, String foto);
 
     List<Pegawai> findByEmail(String email);
+
+    Pegawai ubahPasswordPegawai(String id, UbahPasswordRequest request);
 }
