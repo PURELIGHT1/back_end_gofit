@@ -31,7 +31,6 @@ import com.api.exception.member.*;
 import com.api.implement.services.MemberService;
 import com.api.models.entities.Member;
 import com.api.models.repos.MemberRepo;
-import com.api.models.repos.UserRepo;
 import com.api.util.FileDownloadUtils;
 import com.api.util.FileUploadResponse;
 import com.api.util.FileUploadUtil;
@@ -52,13 +51,7 @@ public class MemberController {
     }
 
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Autowired
     private MemberService memberService;
-
-    @Autowired
-    private UserRepo userRepo;
 
     @Autowired
     private MemberRepo repo;

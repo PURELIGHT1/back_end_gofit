@@ -1,6 +1,5 @@
 package com.api.models.entities;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 import jakarta.persistence.Column;

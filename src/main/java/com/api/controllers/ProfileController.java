@@ -1,7 +1,5 @@
 package com.api.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,11 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.api.dto.PresensiMemberCustomeResponse;
-import com.api.dto.ProfileMemberResponse;
 import com.api.dto.ProfileMemberResponse2;
 import com.api.dto.ResponseData;
-import com.api.implement.MemberImpl;
 import com.api.implement.builder.ProfileInsImpl;
 import com.api.implement.builder.ProfileMemberImpl;
 import com.api.util.ResponseHandler;

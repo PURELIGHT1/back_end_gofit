@@ -7,7 +7,6 @@ import java.util.List;
 import com.api.exception.member.MemberExceptionBadRequest;
 import com.api.models.entities.Member;
 import com.api.models.entities.TransaksiAktivasi;
-import com.api.models.repos.MemberRepo;
 import com.api.models.repos.TransaksiAktivasiRepo;
 
 @Service
@@ -45,7 +44,8 @@ public class TransaksiAktivasiImpl {
 
     public TransaksiAktivasi updateTransaksiAktivasi(String id) {
         TransaksiAktivasi transaksiAktivasiDB = findTransaksiAktivasiById(id);
-        Member memberDB = memberImpl.findByIdMember(transaksiAktivasiDB.getMember().getId());
+        // Member memberDB =
+        // memberImpl.findByIdMember(transaksiAktivasiDB.getMember().getId());
         memberImpl.updateMemberStatus(transaksiAktivasiDB.getMember().getId());
         transaksiAktivasiDB.setStatus("P");
         repo.save(transaksiAktivasiDB);

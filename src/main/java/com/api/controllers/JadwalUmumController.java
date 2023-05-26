@@ -1,16 +1,9 @@
 package com.api.controllers;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.apache.commons.lang3.RandomStringUtils;
 // import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,16 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.dto.JadwalUmumRequest;
-import com.api.dto.ResponseData;
-import com.api.exception.member.MemberExceptionBadRequest;
 import com.api.implement.InstrukturImpl;
-import com.api.implement.JadwalUmumImpl;
-import com.api.implement.services.InstrukturService;
 import com.api.implement.services.JadwalUmumService;
-import com.api.implement.services.KelasService;
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.JadwalUmum;
-import com.api.models.entities.Kelas;
 import com.api.models.repos.JadwalUmumRepo;
 import com.api.util.ResponseHandler;
 
@@ -46,18 +33,8 @@ public class JadwalUmumController {
 
     @Autowired
     private JadwalUmumRepo repo;
-
-    @Autowired
-    private InstrukturService instrukturService;
-
-    @Autowired
-    private JadwalUmumImpl impl;
-
     @Autowired
     private InstrukturImpl instrukturImpl;
-
-    @Autowired
-    private KelasService kelasService;
 
     @GetMapping(value = "jadwal_umum")
     public ResponseEntity<Object> findAllJadwalHarian() {

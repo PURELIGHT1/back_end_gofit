@@ -39,7 +39,7 @@ public class DepositUangImpl {
     }
 
     public List<TransaksiDepositUang> findAllByMember(String id) {
-        Member memberDB = memberImpl.findByIdMember(id);
+        // Member memberDB = memberImpl.findByIdMember(id);
         return (List<TransaksiDepositUang>) repo.findAll();
     }
 

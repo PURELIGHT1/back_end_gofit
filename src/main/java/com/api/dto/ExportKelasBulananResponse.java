@@ -1,9 +1,5 @@
 package com.api.dto;
 
-import java.util.List;
-
-import com.api.models.entities.Kelas;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

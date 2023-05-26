@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.api.dto.PresensiMemberCustomeResponse;
-import com.api.models.entities.Instruktur;
 import com.api.models.entities.JadwalHarian;
 import com.api.models.entities.Member;
 import com.api.models.entities.PresensiKelas;
@@ -28,9 +27,6 @@ public class PresensiKelasImpl {
 
     @Autowired
     private JadwalHarianRepo jadwalHarianRepo;
-
-    @Autowired
-    private InstrukturImpl instrukturImpl;
 
     public List<PresensiKelas> findAll() {
 

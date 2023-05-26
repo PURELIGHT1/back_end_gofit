@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.api.models.entities.Member;
-import com.api.models.entities.TransaksiAktivasi;
 import com.api.models.entities.User;
 
 import java.util.List;

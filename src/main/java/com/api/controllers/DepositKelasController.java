@@ -17,7 +17,6 @@ import com.api.implement.KelasImpl;
 import com.api.implement.MemberImpl;
 import com.api.models.entities.Kelas;
 import com.api.models.entities.Member;
-import com.api.models.entities.Promo;
 import com.api.models.entities.TransaksiDepositKelas;
 import com.api.models.repos.DepositKelasRepo;
 import com.api.util.ResponseHandler;

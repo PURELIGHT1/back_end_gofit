@@ -1,27 +1,20 @@
 package com.api.implement;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.api.dto.BookingGymRequest;
 import com.api.implement.builder.GenerateImpl;
 import com.api.models.entities.BookingGym;
 import com.api.models.entities.Member;
 import com.api.models.entities.Pegawai;
 import com.api.models.entities.PresensiGym;
 import com.api.models.repos.BookingGymRepo;
-import com.api.models.repos.GenerateRepo;
-import com.api.models.repos.PresensiGymRepo;
 
 @Service
 public class BookingGymImpl {
@@ -76,7 +69,7 @@ public class BookingGymImpl {
     public BookingGym bookingGym(String id, BookingGym bookingGym) {
         Member memberDB = memberImpl.findByIdMember(id);
         BookingGym DB = new BookingGym();
-        SimpleDateFormat formatter = new SimpleDateFormat("Y-MM-dd");
+        // SimpleDateFormat formatter = new SimpleDateFormat("Y-MM-dd");
         DB.setMember(memberDB);
         DB.setStatus("S");
         DB.setTglBooking(bookingGym.getTglBooking());

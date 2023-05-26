@@ -1,7 +1,5 @@
 package com.api.dto;
 
-import java.util.Date;
-
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.Kelas;
 

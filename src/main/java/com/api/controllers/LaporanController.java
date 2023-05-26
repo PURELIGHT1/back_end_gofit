@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +20,6 @@ import com.api.implement.KelasImpl;
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.JadwalHarian;
 import com.api.models.entities.Kelas;
-import com.api.models.entities.TransaksiAktivasi;
 import com.api.models.repos.BookingKelasRepo;
 import com.api.models.repos.DepositUangRepo;
 import com.api.models.repos.TransaksiAktivasiRepo;
@@ -54,7 +52,7 @@ public class LaporanController {
     public ResponseEntity<Object> findAllProfile() {
 
         // Integer ta = tARepo.findLaporanAktivasi(bulan, tahun);
-        List<Integer> ta = new ArrayList();
+        List<Integer> ta = new ArrayList<>();
         for (int i = 1; i <= 12; i++) {
             if (tARepo.findLaporanAktivasi(i, 2023) == null && dURepo.findLaporanAktivasi(i, 2023) != null) {
                 Integer total = 0 + dURepo.findLaporanAktivasi(i, 2023);

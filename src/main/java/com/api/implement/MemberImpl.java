@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -49,9 +48,6 @@ public class MemberImpl implements MemberService {
 
     @Autowired
     private TransaksiAktivasiRepo transaksiAktivasiRepo;
-
-    @Autowired
-    private TransaksiAktivasiImpl transaksiAktivasiImpl;
 
     @Override
     public Member createMember(Member member) {
@@ -181,8 +177,8 @@ public class MemberImpl implements MemberService {
         User userDB = userRepo.findUserByMember(memberDB);
         DateFormat dateFormat = new SimpleDateFormat("Y-MM-dd");
         String tglLahir = dateFormat.format(memberDB.getTglLahir());
-        // String encodedPassword = bCryptPasswordEncoder.encode(tglLahir);
-        userDB.setPasswordLogin("12");
+        String encodedPassword = bCryptPasswordEncoder.encode(tglLahir);
+        userDB.setPasswordLogin(encodedPassword);
         return memberDB;
     }
 

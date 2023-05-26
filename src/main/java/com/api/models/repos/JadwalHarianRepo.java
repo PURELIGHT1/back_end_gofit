@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.JadwalHarian;
-import com.api.models.entities.Kelas;
 
 import java.util.Date;
 import java.util.List;

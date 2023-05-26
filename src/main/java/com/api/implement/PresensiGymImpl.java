@@ -3,14 +3,11 @@ package com.api.implement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.api.dto.PresensiGymBookingResponse;
 import com.api.models.entities.BookingGym;
 import com.api.models.entities.Member;
 import com.api.models.entities.PresensiGym;
-import com.api.models.repos.BookingGymRepo;
 import com.api.models.repos.PresensiGymRepo;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

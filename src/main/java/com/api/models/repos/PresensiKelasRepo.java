@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.api.dto.PresensiMemberCustomeResponse;
-import com.api.models.entities.BookingKelas;
-import com.api.models.entities.Kelas;
 import com.api.models.entities.Member;
 import com.api.models.entities.PresensiKelas;
 

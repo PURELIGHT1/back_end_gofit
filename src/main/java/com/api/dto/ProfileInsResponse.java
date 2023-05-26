@@ -2,7 +2,6 @@ package com.api.dto;
 
 import java.util.List;
 
-import com.api.models.entities.JadwalHarian;
 import com.api.models.entities.PresensiInstruktur;
 
 import lombok.AllArgsConstructor;
