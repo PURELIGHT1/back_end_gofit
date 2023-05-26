@@ -9,7 +9,6 @@ import com.api.models.entities.Instruktur;
 import com.api.models.entities.Member;
 import com.api.models.entities.Pegawai;
 import com.api.models.entities.User;
-import java.util.List;
 
 public interface UserRepo extends JpaRepository<User, Long> {
 

@@ -34,8 +34,8 @@ public class JadwalHarian {
     private Kelas kelas;
 
     @Column(name = "tgl_jadwal_harian")
-    @Temporal(TemporalType.DATE)
-    private LocalDate tglJadwal;
+    // @Temporal(TemporalType.DATE)
+    private String tglJadwal;
 
     @Column(name = "hari_jadwal_harian", length = 20)
     private String hariJadwal;

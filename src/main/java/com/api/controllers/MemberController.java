@@ -26,12 +26,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.api.dto.MemberRequest;
 import com.api.dto.UbahPasswordRequest;
 import com.api.exception.member.*;
 import com.api.implement.services.MemberService;
 import com.api.models.entities.Member;
-import com.api.models.entities.User;
 import com.api.models.repos.MemberRepo;
 import com.api.models.repos.UserRepo;
 import com.api.util.FileDownloadUtils;
@@ -72,6 +70,13 @@ public class MemberController {
                 memberService.findAll());
     }
 
+    @GetMapping("/members/aktif")
+    public ResponseEntity<Object> findAllMemberAktiv() {
+
+        return ResponseHandler.responseEntity("Berhasil mengambil seluruh data", HttpStatus.OK,
+                memberService.findAllAktif());
+    }
+
     @GetMapping("/members/{id}")
     public ResponseEntity<Object> getByIdMember(@PathVariable("id") String id) {
 
@@ -99,12 +104,13 @@ public class MemberController {
 
     @PostMapping(value = "members", consumes = { "application/xml", "application/json" })
     public ResponseEntity<Object> createMember(@RequestBody @Validated Member member) {
-
-        if (userRepo.findByUserLogin(member.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body(null);
+        Member cekMember = repo.findEmailMember(member.getEmail());
+        if (cekMember == null) {
+            return ResponseHandler.responseEntity("Berhasil menambah data", HttpStatus.CREATED,
+                    memberService.createMember(member));
+        } else {
+            return ResponseEntity.status(400).build();
         }
-        return ResponseHandler.responseEntity("Berhasil menambah data", HttpStatus.CREATED,
-                memberService.createMember(member));
     }
 
     @PutMapping("/members/{id}")
@@ -145,7 +151,7 @@ public class MemberController {
 
     // }
     @DeleteMapping("/members/{id}")
-    public ResponseEntity<Object> deleteInstrukturStatus(@PathVariable("id") String id) {
+    public ResponseEntity<Object> deleteMember(@PathVariable("id") String id) {
 
         Member memberDB = memberService.findByIdMember(id);
         memberService.deleteMember(id);
@@ -236,7 +242,7 @@ public class MemberController {
     public void generateCardMember(HttpServletResponse response) {
         response.setContentType("application/pdf");
         // DateFormat dateFormat = new SimpleDateFormat("DD-MM-YY");
-        DateFormat dateFormat = new SimpleDateFormat("Y-MM-dd");
+        DateFormat dateFormat = new SimpleDateFormat("y-MM-dd");
         Date date = new Date();
         String currentDateTime = dateFormat.format(date);
 

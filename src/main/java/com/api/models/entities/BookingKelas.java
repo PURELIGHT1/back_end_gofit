@@ -28,9 +28,21 @@ public class BookingKelas {
     @JoinColumn(name = "id_kelas", nullable = false)
     private Kelas kelas;
 
+    @ManyToOne
+    @JoinColumn(name = "id_promo", nullable = true)
+    private Promo promo;
+
     @Column(name = "tgl_booking_kelas")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date tglBooking;
+
+    @Column(name = "tgl_create_booking_kelas")
+    @Temporal(TemporalType.DATE)
+    private Date tglBuat;
+
+    @ManyToOne
+    @JoinColumn(name = "jadwal_booking_kelas", nullable = false)
+    private JadwalHarian jadwal;
 
     @Column(name = "status_booking_kelas", length = 5)
     private String status;

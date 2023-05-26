@@ -23,10 +23,13 @@ public interface InstrukturRepo extends JpaRepository<Instruktur, String> {
     @Query("SELECT i FROM instruktur i WHERE i.email = ?1")
     public List<Instruktur> findByEmail(String email);
 
+    @Query("SELECT i FROM instruktur i order by i.jlhTerlambat asc")
+    public List<Instruktur> findInstrukturASC();
+
     @Query("SELECT i FROM instruktur i WHERE i.inisial = ?1")
     public List<Instruktur> findByInisial(String inisial);
 
-    @Query("select i from instruktur i where i.nama LIKE ?1%")
+    @Query("select i from instruktur i where i.nama LIKE %?1% or i.alamat LIKE %?1% or i.noHp LIKE %?1%")
     public List<Instruktur> findByNama(String nama);
 
     @Query("SELECT generateIdInstruktur FROM generate gr WHERE gr.id = ?1")

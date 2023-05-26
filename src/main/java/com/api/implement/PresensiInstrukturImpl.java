@@ -13,8 +13,6 @@ import com.api.models.repos.InstrukturRepo;
 import com.api.models.repos.JadwalHarianRepo;
 import com.api.models.repos.PresensiInstrukturRepo;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -44,6 +42,12 @@ public class PresensiInstrukturImpl {
     public List<PresensiInstruktur> filterAllIzin() {
         // return (List<PresensiInstruktur>) repo.findPresensiIzin();
         return repo.findPresensiIzin();
+    }
+
+    public List<PresensiInstruktur> findAllJadwalHarianIns(String id) {
+
+        Instruktur instrukturDB = instrukturImpl.findByIdInstruktur(id);
+        return repo.findPresensiIzinById(instrukturDB);
     }
 
     public List<PresensiInstruktur> findAllIzinById(String id) {
@@ -91,6 +95,7 @@ public class PresensiInstrukturImpl {
         db.setMulaiGym(req.getMulaiGym());
         db.setAkhirGym(req.getAkhirGym());
         db.setStatus("PE");
+        db.setKeterangan("presensi_izin");
 
         return repo.save(db);
     }

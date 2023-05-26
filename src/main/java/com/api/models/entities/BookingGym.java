@@ -1,5 +1,6 @@
 package com.api.models.entities;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -30,8 +31,15 @@ public class BookingGym {
     private Member member;
 
     @Column(name = "tgl_booking_gym")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date tglBooking;
+    // @Temporal(TemporalType.DATE)
+    private String tglBooking;
+
+    @Column(name = "tgl_create_booking_gym")
+    @Temporal(TemporalType.DATE)
+    private Date tglBuat;
+
+    @Column(name = "sesi_booking_gym", length = 5)
+    private Integer sesi;
 
     @Column(name = "status_booking_gym", length = 5)
     private String status;

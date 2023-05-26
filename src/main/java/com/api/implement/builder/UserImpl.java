@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.api.dto.AuthenticationRequest;
@@ -70,6 +71,9 @@ public class UserImpl {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     public User registerUser(User user) {
         boolean userExists = repo.findByUserLogin(user.getUserLogin()).isPresent();
         if (userExists) {
@@ -111,8 +115,32 @@ public class UserImpl {
         Pegawai pegawaiBD2 = Pegawai.build("P02", "Kasir Gofit Gym", "kasir.png", "kasir@gmail.com",
                 "Jl. Babarsari No.43, Janti, Caturtunggal, Kec. Depok, Kabupaten Sleman, Daerah Istimewa Yogyakarta 55281",
                 tglLahirKasir, "082375178720", "A", "1", null, null);
+
         pegawaiRepo.save(pegawaiBD);
         pegawaiRepo.save(pegawaiBD2);
+        boolean moExists = repo.findByUserLogin(pegawaiBD.getEmail()).isPresent();
+        if (moExists) {
+            throw new IllegalStateException("Username sudah terdaftar");
+        }
+        User mo = new User();
+        mo.setUserLogin(pegawaiBD.getEmail());
+        String encodedPasswordMo = bCryptPasswordEncoder.encode(pegawaiBD.getNoHp());
+        mo.setPasswordLogin(encodedPasswordMo);
+        mo.setUserRole(UserRole.MO);
+        mo.setPegawai(pegawaiBD);
+        repo.save(mo);
+
+        boolean kasirExists = repo.findByUserLogin(pegawaiBD2.getEmail()).isPresent();
+        if (kasirExists) {
+            throw new IllegalStateException("Username sudah terdaftar");
+        }
+        User kasir = new User();
+        kasir.setUserLogin(pegawaiBD2.getEmail());
+        String encodedPasswordKasir = bCryptPasswordEncoder.encode(pegawaiBD2.getNoHp());
+        kasir.setPasswordLogin(encodedPasswordKasir);
+        kasir.setUserRole(UserRole.KASIR);
+        kasir.setPegawai(pegawaiBD2);
+        repo.save(kasir);
 
         // Tambah Kelas
         List<Kelas> listKelas = new ArrayList<>();
@@ -177,6 +205,17 @@ public class UserImpl {
         Kode kode9 = Kode.build(9, "PE", "Pending");
         Kode kode10 = Kode.build(10, "C", "Izin Diterima");
         Kode kode11 = Kode.build(11, "D", "DiTolak");
+        Kode kode12 = Kode.build(12, "AP", "Presensi Kelas");
+
+        // presensi member
+        Kode kode13 = Kode.build(13, "H", "Hadir");
+        Kode kode14 = Kode.build(14, "Al", "Alpha");
+        Kode kode15 = Kode.build(15, "Iz", "Izin");
+
+        Kode kode16 = Kode.build(16, "T", "Presensi Tersedia");
+        Kode kode17 = Kode.build(17, "DONE", "Presensi Sudah Di Tutup");
+
+        Kode kode18 = Kode.build(18, "BP", "Belum Presensi");
 
         kodeRepo.save(kode);
         kodeRepo.save(kode2);
@@ -189,6 +228,13 @@ public class UserImpl {
         kodeRepo.save(kode9);
         kodeRepo.save(kode10);
         kodeRepo.save(kode11);
+        kodeRepo.save(kode12);
+        kodeRepo.save(kode13);
+        kodeRepo.save(kode14);
+        kodeRepo.save(kode15);
+        kodeRepo.save(kode16);
+        kodeRepo.save(kode17);
+        kodeRepo.save(kode18);
         return userDB;
     }
 

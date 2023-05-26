@@ -29,7 +29,7 @@ public class TransaksiDepositUang {
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "id_promo", nullable = false)
+    @JoinColumn(name = "id_promo", nullable = true)
     private Promo promo;
 
     @Column(name = "jlh_deposit_uang", length = 255)

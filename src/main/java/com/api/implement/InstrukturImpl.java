@@ -144,6 +144,10 @@ public class InstrukturImpl implements InstrukturService {
         return (List<Instruktur>) instrukturRepo.findAll();
     }
 
+    public List<Instruktur> findAllAsc() {
+        return (List<Instruktur>) instrukturRepo.findInstrukturASC();
+    }
+
     @Override
     public Instruktur findByIdInstruktur(String id) {
         if (instrukturRepo.findById(id).isEmpty()) {
@@ -222,11 +226,14 @@ public class InstrukturImpl implements InstrukturService {
 
         String password = request.getPasswordBaru();
         String encodedPassword = bCryptPasswordEncoder.encode(password);
+
         Integer ubah = instrukturRepo.updatePassword(encodedPassword, instrukturDB);
         if (ubah <= 0) {
-            throw new InstrukturExceptionBadRequest("Password gagal diubah");
+            return null;
+        } else {
+            return instrukturDB;
         }
-        return instrukturDB;
+
     }
 
     @Override

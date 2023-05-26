@@ -1,7 +1,6 @@
 package com.api.models.entities;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "jadwal_umum")
+@Entity
 @Data
 @AllArgsConstructor(staticName = "build")
 @NoArgsConstructor
@@ -32,10 +31,6 @@ public class JadwalUmum {
     @ManyToOne
     @JoinColumn(name = "id_kelas", nullable = false)
     private Kelas kelas;
-
-    @Column(name = "tgl_jadwal_umum")
-    @Temporal(TemporalType.DATE)
-    private LocalDate tglJadwal;
 
     @Column(name = "hari_jadwal_umum", length = 20)
     private String hariJadwal;

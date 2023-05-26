@@ -41,11 +41,15 @@ public class PresensiGym {
     @Temporal(TemporalType.DATE)
     private Date tglpresensi;
 
+    @Column(name = "tgl_booking_gym")
+    // @Temporal(TemporalType.DATE)
+    private String tglBooking;
+
     @Column(name = "sesi_mulai_presensi")
-    private String mulaiGym;
+    private Integer mulaiGym;
 
     @Column(name = "sesi_akhir_presensi")
-    private String akhirGym;
+    private Integer akhirGym;
 
     @Column(name = "status_presensi_gym", length = 5)
     private String status;

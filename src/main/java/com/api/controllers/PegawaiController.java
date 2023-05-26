@@ -111,6 +111,14 @@ public class PegawaiController {
 
     }
 
+    public ResponseEntity<Object> updatePasswordInstruktur(@PathVariable("id") String id,
+            @RequestBody @Validated UbahPasswordRequest request) {
+
+        return ResponseHandler.responseEntity("Berhasil ubah password",
+                HttpStatus.CREATED, pegawaiService.ubahPasswordPegawai(id, request));
+
+    }
+
     @GetMapping("pegawais/foto/{fileCode}")
     public ResponseEntity<?> downloadFile(@PathVariable("fileCode") String fileCode) {
 
@@ -145,12 +153,4 @@ public class PegawaiController {
                 pegawaiService.findByEmail(email));
     }
 
-    @PutMapping("/pegawais/edit-password/{id}")
-    public ResponseEntity<Object> updatePasswordInstruktur(@PathVariable("id") String id,
-            @RequestBody @Validated UbahPasswordRequest request) {
-
-        return ResponseHandler.responseEntity("Berhasil ubah password",
-                HttpStatus.CREATED, pegawaiService.ubahPasswordPegawai(id, request));
-
-    }
 }

@@ -8,6 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,7 +27,9 @@ import com.api.dto.UbahPasswordRequest;
 import com.api.exception.instruktur.InstrukturExceptionNotFound;
 import com.api.implement.services.InstrukturService;
 import com.api.models.entities.Instruktur;
+import com.api.models.entities.User;
 import com.api.models.repos.InstrukturRepo;
+import com.api.models.repos.UserRepo;
 import com.api.util.FileDownloadUtils;
 import com.api.util.FileUploadResponse;
 import com.api.util.FileUploadUtil;
@@ -41,7 +44,13 @@ public class InstrukturController {
     private InstrukturService instrukturService;
 
     @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
     private InstrukturRepo repo;
+
+    @Autowired
+    private UserRepo userRepo;
 
     @GetMapping("/instrukturs")
     public ResponseEntity<Object> findAllInstruktur() {
@@ -92,10 +101,16 @@ public class InstrukturController {
     @PutMapping("/instrukturs/edit-password/{id}")
     public ResponseEntity<Object> updatePasswordInstruktur(@PathVariable("id") String id,
             @RequestBody @Validated UbahPasswordRequest request) {
-
-        return ResponseHandler.responseEntity("Berhasil ubah password",
-                HttpStatus.CREATED,
-                instrukturService.ubahPasswordInstruktur(id, request));
+        Instruktur instrukturDB = instrukturService.findByIdInstruktur(id);
+        User userDB = userRepo.findUserByInstruktur(instrukturDB);
+        String encodedPassword = bCryptPasswordEncoder.encode(request.getPasswordLama());
+        if (encodedPassword.equals(userDB.getPasswordLogin())) {
+            return ResponseHandler.responseEntity("Berhasil ubah password",
+                    HttpStatus.CREATED,
+                    instrukturService.ubahPasswordInstruktur(id, request));
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
 
     }
 

@@ -33,8 +33,13 @@ public class PresensiKelas {
     @JoinColumn(name = "id_member", nullable = false)
     private Member member;
 
+    @Column(name = "tgl_booking_kelas")
+    @Temporal(TemporalType.DATE)
+    private Date tglBooking;
+
     @Column(name = "tgl_presensi_kelas")
-    private String tglpresensi;
+    @Temporal(TemporalType.DATE)
+    private Date tglpresensi;
 
     @Column(name = "cretor_presensi")
     private String creator;

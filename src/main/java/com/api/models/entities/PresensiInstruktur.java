@@ -1,15 +1,11 @@
 package com.api.models.entities;
 
-import java.util.Date;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.Data;
 
 @Entity
@@ -35,4 +31,11 @@ public class PresensiInstruktur {
 
     @Column(name = "status_presensi_instruktur", length = 5)
     private String status;
+
+    @Column(name = "keterangan_presensi_instruktur", length = 100)
+    private String keterangan;
+
+    @ManyToOne
+    @JoinColumn(name = "id_jadwal_harian", nullable = true)
+    private JadwalHarian jadwalHarian;
 }

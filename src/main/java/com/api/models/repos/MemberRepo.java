@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.api.models.entities.Member;
+import com.api.models.entities.TransaksiAktivasi;
 import com.api.models.entities.User;
 
 import java.util.List;
@@ -19,8 +20,11 @@ public interface MemberRepo extends JpaRepository<Member, String> {
     @Query("SELECT u from _user u WHERE u.member = ?1")
     public List<User> findUserMember(Member member);
 
-    @Query("select m from Member m where m.nama LIKE ?1%")
+    @Query("select m from Member m where m.nama LIKE %?1% or m.alamat LIKE %?1% or m.noHp LIKE %?1%")
     public List<Member> findByNama(String nama);
+
+    @Query("select m from Member m where m.status = 'A'")
+    public List<Member> findMemberAktif();
 
     @Modifying
     @Transactional
@@ -34,5 +38,8 @@ public interface MemberRepo extends JpaRepository<Member, String> {
 
     @Query("select m from Member m where m.status = 'A' and m.id = ?1")
     public Member findMemberByIdAktif(String id);
+
+    @Query("SELECT m from Member m WHERE m.email = ?1")
+    public Member findEmailMember(String email);
 
 }

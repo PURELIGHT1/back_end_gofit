@@ -9,9 +9,15 @@ public interface MemberService {
 
     List<Member> findAll();
 
+    List<Member> findAllAktif();
+
     Member findByIdMember(String id);
 
     Member updateMember(String id, Member Member);
+
+    Member updateDepositMember(String id, Integer deposit);
+
+    Member updateDepositMemberKurang(String id, Integer deposit);
 
     Member updateMemberStatus(String id);
 

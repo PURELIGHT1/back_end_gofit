@@ -7,12 +7,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.api.dto.MemberRequest;
-import com.api.dto.TransaksiAktivasiRequest;
 import com.api.dto.UbahPasswordRequest;
 import com.api.exception.member.*;
 import com.api.implement.builder.GenerateImpl;
@@ -50,6 +49,9 @@ public class MemberImpl implements MemberService {
 
     @Autowired
     private TransaksiAktivasiRepo transaksiAktivasiRepo;
+
+    @Autowired
+    private TransaksiAktivasiImpl transaksiAktivasiImpl;
 
     @Override
     public Member createMember(Member member) {
@@ -190,14 +192,21 @@ public class MemberImpl implements MemberService {
         User userDB = memberRepo.findUserMember(memberDB).get(0);
         // TokenRepo token = tokenRepo.findById(tokeDB.getId());
         tokenRepo.deleteAll();
-        userRepo.deleteById(userDB.getId());
 
+        TransaksiAktivasi transaksiAktivasiDB = transaksiAktivasiRepo.findTAMember(memberDB);
+        transaksiAktivasiRepo.deleteById(transaksiAktivasiDB.getId());
+        userRepo.deleteById(userDB.getId());
         memberRepo.deleteById(id);
     }
 
     @Override
     public List<Member> findAll() {
         return (List<Member>) memberRepo.findAll();
+    }
+
+    @Override
+    public List<Member> findAllAktif() {
+        return (List<Member>) memberRepo.findMemberAktif();
     }
 
     @Override
@@ -210,6 +219,20 @@ public class MemberImpl implements MemberService {
 
     public Member findByIdMemberAktif(String id) {
         return memberRepo.findMemberByIdAktif(id);
+    }
+
+    @Override
+    public Member updateDepositMember(String id, Integer deposit) {
+        Member DB = findByIdMember(id);
+        DB.setSisaDeposit(DB.getSisaDeposit() + deposit);
+        return memberRepo.save(DB);
+    }
+
+    @Override
+    public Member updateDepositMemberKurang(String id, Integer deposit) {
+        Member DB = findByIdMember(id);
+        DB.setSisaDeposit(DB.getSisaDeposit() - deposit);
+        return memberRepo.save(DB);
     }
 
     @Override
