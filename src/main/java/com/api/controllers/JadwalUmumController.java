@@ -59,8 +59,8 @@ public class JadwalUmumController {
     public ResponseEntity<Object> updateJadwalPromo(@PathVariable("id") String id,
             @Valid @RequestBody JadwalUmumRequest req) {
         Instruktur instrukturDB = instrukturImpl.findByIdInstruktur(req.getInstruktur());
-        JadwalUmum jadwalUmumDB = repo.findAllJadwalKosong(req.getHariJadwal(), req.getSesiJadwal(), instrukturDB);
-        if (jadwalUmumDB == null) {
+        Integer jadwalUmumDB = repo.countAllJadwalKosong(req.getHariJadwal(), req.getSesiJadwal(), instrukturDB);
+        if (jadwalUmumDB <= 1) {
             return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.CREATED,
                     service.updateJadwalUmum(id, req));
         } else {

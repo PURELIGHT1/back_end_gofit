@@ -17,6 +17,7 @@ import com.api.dto.LaporanInstrukturResponse;
 import com.api.implement.InstrukturImpl;
 import com.api.implement.JadwalHarianImpl;
 import com.api.implement.KelasImpl;
+import com.api.models.entities.BookingKelas;
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.JadwalHarian;
 import com.api.models.entities.Kelas;
