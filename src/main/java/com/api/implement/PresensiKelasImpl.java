@@ -76,7 +76,7 @@ public class PresensiKelasImpl {
             // DB.setInstruktur(instrukturDB);
             DB.setStatusPresensiKelasSendiri("T");
 
-            String currentDate2 = dateFormat2.format(jadwalHarianDB.getTglJadwal());
+            // String currentDate2 = dateFormat2.format(jadwalHarianDB.getTglJadwal());
             Integer slot = repo.getSlotMember(currentDate, 20);
             DB.setJumlahMemberKelas(slot + i);
             list.add(DB);
