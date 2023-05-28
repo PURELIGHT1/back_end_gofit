@@ -1,5 +1,7 @@
 package com.api.controllers.User;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +9,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +21,9 @@ import com.api.dto.ResponseData;
 import com.api.implement.builder.UserImpl;
 import com.api.models.UserRole;
 import com.api.models.entities.User;
+import com.api.models.entities.token.Token;
+import com.api.models.repos.TokenRepo;
+import com.api.util.ResponseHandler;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173/")
@@ -27,6 +34,9 @@ public class UserController {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private TokenRepo tokenRepo;
 
     @PostMapping("/register")
     public ResponseEntity<ResponseData<User>> register(@RequestBody AuthenticationRequest user,
@@ -76,5 +86,17 @@ public class UserController {
 
         return ResponseEntity.ok(responseData);
 
+    }
+
+    @PutMapping("/logoutUrl/{id}")
+    public ResponseEntity<Object> login(@PathVariable("id") Long id) {
+        List<Token> tokens = tokenRepo.findAllTokensByUser(id);
+        for (int i = 0; i < tokens.size(); i++) {
+            tokens.get(i).setRevoked(false);
+            tokens.get(i).setExpired(false);
+            tokenRepo.save(tokens.get(i));
+        }
+        return ResponseHandler.responseEntity("Berhasil mengambil seluruh data",
+                HttpStatus.OK, tokens);
     }
 }
