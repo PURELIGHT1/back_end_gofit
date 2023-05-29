@@ -15,7 +15,9 @@ import com.api.implement.builder.GenerateImpl;
 import com.api.implement.services.InstrukturService;
 import com.api.models.UserRole;
 import com.api.models.entities.Instruktur;
+import com.api.models.entities.JadwalHarian;
 import com.api.models.entities.User;
+import com.api.models.entities.token.Token;
 import com.api.models.repos.InstrukturRepo;
 import com.api.models.repos.TokenRepo;
 import com.api.models.repos.UserRepo;
@@ -37,6 +39,9 @@ public class InstrukturImpl implements InstrukturService {
 
     @Autowired
     private GenerateImpl generateImpl;
+
+    @Autowired
+    private JadwalHarianImpl jadwalHarianImpl;
 
     @Override
     public List<Instruktur> findByEmail(String email) {
@@ -117,7 +122,7 @@ public class InstrukturImpl implements InstrukturService {
 
         // insert to user
         User userDB = new User();
-        userDB.setUserLogin(instrukturDB.getInisial());
+        userDB.setUserLogin(instrukturDB.getEmail());
         String encodedPassword = bCryptPasswordEncoder.encode(instrukturDB.getNoHp());
         userDB.setPasswordLogin(encodedPassword);
 
@@ -130,15 +135,27 @@ public class InstrukturImpl implements InstrukturService {
 
     @Override
     public void deleteInstruktur(String id) {
-        Instruktur instrukturDB = instrukturRepo.findById(id).get();
-        User userDB = instrukturRepo.findUserInstruktur(instrukturDB).get(0);
-        userRepo.deleteById(userDB.getId());
-        instrukturRepo.deleteById(id);
+        Instruktur instrukturDB = findByIdInstruktur(id);
+        User userDB = instrukturRepo.findUserInstruktur(instrukturDB);
+        List<Token> token = tokenRepo.findAllTokensByUser(userDB.getId());
+        if (!token.isEmpty() && token != null) {
+            token.forEach(t -> {
+                tokenRepo.deleteById(t.getId());
+            });
+
+            userRepo.deleteById(userDB.getId());
+            instrukturDB.setStatus("I");
+            instrukturRepo.save(instrukturDB);
+        } else {
+            userRepo.deleteById(userDB.getId());
+            instrukturDB.setStatus("I");
+            instrukturRepo.save(instrukturDB);
+        }
     }
 
     @Override
     public List<Instruktur> findAll() {
-        return (List<Instruktur>) instrukturRepo.findAll();
+        return (List<Instruktur>) instrukturRepo.findInstruktur();
     }
 
     public List<Instruktur> findAllAsc() {

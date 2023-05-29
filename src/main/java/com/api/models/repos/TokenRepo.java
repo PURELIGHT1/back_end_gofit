@@ -14,6 +14,6 @@ public interface TokenRepo extends JpaRepository<Token, Integer> {
 
     Optional<Token> findByToken(String token);
 
-    @Query("SELECT t FROM Token t WHERE t.user = ?1")
+    @Query("SELECT t FROM Token t INNER JOIN _user u ON t.user.id = u.id where u.id = ?1")
     List<Token> findAllTokensByUser(Long userId);
 }

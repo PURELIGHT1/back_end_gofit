@@ -114,24 +114,6 @@ public class InstrukturController {
 
     }
 
-    // @PutMapping("/instrukturs/status/{id}")
-    // public ResponseEntity<Object> updateInstrukturStatus(@PathVariable("id")
-    // String id) {
-
-    // Instruktur instrukturDB = instrukturService.findByIdInstruktur(id);
-    // if (instrukturDB == null) {
-    // return ResponseHandler.responseEntity("Data tidak ditemukan",
-    // HttpStatus.NOT_FOUND, null);
-    // }
-    // instrukturDB.setStatus(true);
-    // repo.save(instrukturDB);
-
-    // return ResponseHandler.responseEntity(
-    // "Berhasil mengubah status data", HttpStatus.OK,
-    // instrukturDB);
-
-    // }
-
     @DeleteMapping("/instrukturs/{id}")
     public ResponseEntity<Object> deleteInstrukturStatus(@PathVariable("id") String id) {
 

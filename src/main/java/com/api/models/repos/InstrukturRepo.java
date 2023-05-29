@@ -18,13 +18,16 @@ public interface InstrukturRepo extends JpaRepository<Instruktur, String> {
     // @Query("SELECT * FROM instruktur i NATURAL JOIN user u")
     // public Collection<> findALLByUser();
     @Query("SELECT u from _user u WHERE u.instruktur = ?1")
-    public List<User> findUserInstruktur(Instruktur instruktur);
+    public User findUserInstruktur(Instruktur instruktur);
 
     @Query("SELECT i FROM instruktur i WHERE i.email = ?1")
     public List<Instruktur> findByEmail(String email);
 
     @Query("SELECT i FROM instruktur i order by i.jlhTerlambat asc")
     public List<Instruktur> findInstrukturASC();
+
+    @Query("SELECT i FROM instruktur i where i.status='A'")
+    public List<Instruktur> findInstruktur();
 
     @Query("SELECT i FROM instruktur i WHERE i.inisial = ?1")
     public List<Instruktur> findByInisial(String inisial);

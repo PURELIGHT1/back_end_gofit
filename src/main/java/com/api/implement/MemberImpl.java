@@ -189,7 +189,8 @@ public class MemberImpl implements MemberService {
         TransaksiAktivasi transaksiAktivasiDB = transaksiAktivasiRepo.findTAMember(memberDB);
         transaksiAktivasiRepo.deleteById(transaksiAktivasiDB.getId());
         userRepo.deleteById(userDB.getId());
-        memberRepo.deleteById(id);
+        memberDB.setStatus("I");
+        memberRepo.save(memberDB);
     }
 
     @Override
