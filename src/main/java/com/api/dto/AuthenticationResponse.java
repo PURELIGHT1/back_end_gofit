@@ -4,10 +4,8 @@ import com.api.models.entities.Instruktur;
 import com.api.models.entities.Pegawai;
 import com.api.models.entities.Member;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter

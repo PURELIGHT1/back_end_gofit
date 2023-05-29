@@ -186,9 +186,6 @@ public class MemberImpl implements MemberService {
     public void deleteMember(String id) {
         Member memberDB = memberRepo.findById(id).get();
         User userDB = memberRepo.findUserMember(memberDB).get(0);
-        // TokenRepo token = tokenRepo.findById(tokeDB.getId());
-        tokenRepo.deleteAll();
-
         TransaksiAktivasi transaksiAktivasiDB = transaksiAktivasiRepo.findTAMember(memberDB);
         transaksiAktivasiRepo.deleteById(transaksiAktivasiDB.getId());
         userRepo.deleteById(userDB.getId());

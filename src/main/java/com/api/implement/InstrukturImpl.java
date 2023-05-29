@@ -132,8 +132,6 @@ public class InstrukturImpl implements InstrukturService {
     public void deleteInstruktur(String id) {
         Instruktur instrukturDB = instrukturRepo.findById(id).get();
         User userDB = instrukturRepo.findUserInstruktur(instrukturDB).get(0);
-        // TokenRepo token = tokenRepo.findById(tokeDB.getId());
-        tokenRepo.deleteAll();
         userRepo.deleteById(userDB.getId());
         instrukturRepo.deleteById(id);
     }

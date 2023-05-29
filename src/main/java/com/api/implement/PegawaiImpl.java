@@ -149,8 +149,6 @@ public class PegawaiImpl implements PegawaiService {
     public void deletePegawai(String id) {
         Pegawai pegawaiDB = pegawaiRepo.findById(id).get();
         User userDB = pegawaiRepo.findUserPegawai(pegawaiDB).get(0);
-        // TokenRepo token = tokenRepo.findById(tokeDB.getId());
-        tokenRepo.deleteAll();
         userRepo.deleteById(userDB.getId());
         pegawaiRepo.deleteById(id);
     }
