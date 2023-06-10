@@ -1,5 +1,7 @@
 package com.api.models.repos;
 
+import java.util.Date;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -22,7 +24,7 @@ public interface GenerateRepo extends JpaRepository<GenerateTabel, Integer> {
     public Integer findgenerateStrukByGenerateTabel(Integer id);
 
     @Query("SELECT generateJadwal FROM generate gr WHERE gr.id = ?1")
-    public boolean findgenerateJadwalByGenerateTabel(Integer id);
+    public Integer findgenerateJadwalByGenerateTabel(Integer id);
 
     @Modifying
     @Transactional
@@ -47,5 +49,5 @@ public interface GenerateRepo extends JpaRepository<GenerateTabel, Integer> {
     @Modifying
     @Transactional
     @Query("UPDATE generate gr SET gr.generateJadwal = ?1 WHERE gr.id = 1")
-    public Integer updateGenereteJadwalByGenerateTabel(Boolean statusGenerate);
+    public Integer updateGenereteJadwalByGenerateTabel(Date generate);
 }

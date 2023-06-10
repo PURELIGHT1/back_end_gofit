@@ -2,12 +2,15 @@ package com.api.implement.services;
 
 import java.util.List;
 
+import com.api.dto.ResponseSelect;
 import com.api.dto.UbahPasswordRequest;
 import com.api.models.entities.Instruktur;
 
 public interface InstrukturService {
 
     List<Instruktur> findAll();
+
+    List<ResponseSelect> findInstrukturAktif();
 
     Instruktur findByIdInstruktur(String id);
 
@@ -18,6 +21,8 @@ public interface InstrukturService {
     Instruktur createInstruktur(Instruktur instruktur);
 
     void deleteInstruktur(String id);
+
+    void aktifInstruktur(String id);
 
     Instruktur updateFotoInstruktur(String id, String foto);
 

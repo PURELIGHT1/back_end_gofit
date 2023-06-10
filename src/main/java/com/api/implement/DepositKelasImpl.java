@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.api.dto.DepositKelasRequest;
+import com.api.dto.TransaksiDepositKelasResponse;
 import com.api.implement.builder.GenerateImpl;
 import com.api.models.entities.Kelas;
 import com.api.models.entities.Member;
@@ -40,8 +41,40 @@ public class DepositKelasImpl {
     @Autowired
     private KelasImpl kelasImpl;
 
-    public List<TransaksiDepositKelas> findAll() {
-        return (List<TransaksiDepositKelas>) repo.findAll();
+    // public List<TransaksiDepositKelas> findAll() {
+    // return (List<TransaksiDepositKelas>) repo.findAll();
+    // }
+    public List<TransaksiDepositKelasResponse> findAll() {
+        List<TransaksiDepositKelas> listDK = repo.findAll();
+        List<TransaksiDepositKelasResponse> list = new ArrayList<>();
+
+        for (int i = 0; i < listDK.size(); i++) {
+            TransaksiDepositKelasResponse DB = new TransaksiDepositKelasResponse();
+            TransaksiDepositKelas DK = listDK.get(i);
+
+            DB.setId(DK.getId());
+            DB.setPegawai(DK.getPegawai().getNama());
+            DB.setIdPegawai(DK.getPegawai().getId());
+            DB.setIdMember(DK.getMember().getId());
+            DB.setMember(DK.getMember().getNama());
+            DB.setKelas(DK.getKelas().getNama());
+            DB.setIdKelas(DK.getKelas().getId());
+
+            Promo promo = DK.getPromo();
+            if (promo == null) {
+                DB.setPromo("-");
+            } else {
+                DB.setPromo(promo.getJenis());
+                DB.setIdPromo(promo.getId());
+            }
+
+            DB.setSisaKelas(DK.getSisaKelas());
+            DB.setTglBerlaku(DK.getTglBerlaku());
+            DB.setStatus(DK.getStatus());
+
+            list.add(DB);
+        }
+        return list;
     }
 
     public ArrayList<TransaksiDepositKelas> findAllByMember(String id) {

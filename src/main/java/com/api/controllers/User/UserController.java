@@ -1,5 +1,6 @@
 package com.api.controllers.User;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ import com.api.models.entities.User;
 import com.api.models.entities.token.Token;
 import com.api.models.repos.TokenRepo;
 import com.api.util.ResponseHandler;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173/")
@@ -86,6 +90,13 @@ public class UserController {
 
         return ResponseEntity.ok(responseData);
 
+    }
+
+    @PostMapping("/refresh_token")
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        service.refreshToken(request, response);
     }
 
     @PutMapping("/logoutUrl/{id}")

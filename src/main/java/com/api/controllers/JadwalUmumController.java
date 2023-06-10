@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +44,13 @@ public class JadwalUmumController {
                 HttpStatus.OK, service.findJadwalUmum());
     }
 
+    @GetMapping(value = "jadwal_umum/{id}")
+    public ResponseEntity<Object> findJadwalHarianById(@PathVariable("id") String id) {
+
+        return ResponseHandler.responseEntity("Berhasil mengambil seluruh data",
+                HttpStatus.OK, service.findJadwalUmumById(id));
+    }
+
     @PostMapping(value = "jadwal_umum", consumes = { "application/xml", "application/json" })
     public ResponseEntity<Object> addJadwalPromo(@Valid @RequestBody JadwalUmumRequest req) {
         Instruktur instrukturDB = instrukturImpl.findByIdInstruktur(req.getInstruktur());
@@ -59,12 +67,24 @@ public class JadwalUmumController {
     public ResponseEntity<Object> updateJadwalPromo(@PathVariable("id") String id,
             @Valid @RequestBody JadwalUmumRequest req) {
         Instruktur instrukturDB = instrukturImpl.findByIdInstruktur(req.getInstruktur());
-        Integer jadwalUmumDB = repo.countAllJadwalKosong(req.getHariJadwal(), req.getSesiJadwal(), instrukturDB);
-        if (jadwalUmumDB <= 1) {
+        JadwalUmum jadwalUmumTersedia = repo.findAllJadwalKosong(req.getHariJadwal(), req.getSesiJadwal(),
+                instrukturDB);
+        if (jadwalUmumTersedia == null) {
             return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.CREATED,
                     service.updateJadwalUmum(id, req));
         } else {
-            return ResponseHandler.responseEntity("Gagal mengubah data", HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.responseEntity("Gagal menambah data", HttpStatus.BAD_REQUEST, null);
         }
+    }
+
+    @DeleteMapping(value = "/jadwal_umum/{id}")
+    public ResponseEntity<Object> deleteJadwalHarian(@PathVariable("id") String id) {
+
+        JadwalUmum jadwalHarian = service.findJadwalUmumById(id);
+        service.deleteJadwalUmum(id);
+        return ResponseHandler.responseEntity("Berhasil hapus data",
+                HttpStatus.ACCEPTED,
+                jadwalHarian);
+
     }
 }

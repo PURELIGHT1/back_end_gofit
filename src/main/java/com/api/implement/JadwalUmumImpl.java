@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.api.dto.JadwalUmumRequest;
+import com.api.exception.kelas.KelasExceptionNotFound;
 import com.api.implement.services.JadwalUmumService;
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.JadwalUmum;
@@ -35,6 +36,9 @@ public class JadwalUmumImpl implements JadwalUmumService {
 
     @Override
     public JadwalUmum findJadwalUmumById(String id) {
+        if (repo.findById(id).get() == null) {
+            throw new KelasExceptionNotFound("Data tidak ditemukan");
+        }
         return repo.findById(id).get();
     }
 
@@ -70,4 +74,13 @@ public class JadwalUmumImpl implements JadwalUmumService {
         return repo.save(db);
     }
 
+    @Override
+    public void deleteJadwalUmum(String id) {
+        repo.deleteById(id);
+    }
+
+    @Override
+    public List<JadwalUmum> findJadwalUmumByDay(String hari) {
+        return repo.findAllJadwalByDay(hari);
+    }
 }

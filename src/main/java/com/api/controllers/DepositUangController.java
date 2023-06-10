@@ -23,6 +23,12 @@ public class DepositUangController {
     @Autowired
     private DepositUangImpl impl;
 
+    // @GetMapping(value = "/deposit_uang")
+    // public ResponseEntity<Object> findAllDepositUang() {
+    // return ResponseHandler.responseEntity("Berhasil mengambil seluruh data",
+    // HttpStatus.OK,
+    // impl.findAll());
+    // }
     @GetMapping(value = "/deposit_uang")
     public ResponseEntity<Object> findAllDepositUang() {
         return ResponseHandler.responseEntity("Berhasil mengambil seluruh data",

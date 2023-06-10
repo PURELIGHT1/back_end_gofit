@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExportKelasBulananResponse {
-    private String kelas;
-    private String instruktur;
-    private Integer peserta;
-    private Integer libur;
+public class ResponseSelectInt {
+    private String label;
+    private Integer value;
 }

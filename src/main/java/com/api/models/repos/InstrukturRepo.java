@@ -20,6 +20,12 @@ public interface InstrukturRepo extends JpaRepository<Instruktur, String> {
     @Query("SELECT u from _user u WHERE u.instruktur = ?1")
     public User findUserInstruktur(Instruktur instruktur);
 
+    @Query("SELECT i from instruktur i order by i.status asc")
+    public List<Instruktur> findInstrukturUrut();
+
+    @Query("SELECT i from instruktur i where i.status = 'A' order by i.nama asc")
+    public List<Instruktur> findInstrukturAktif();
+
     @Query("SELECT i FROM instruktur i WHERE i.email = ?1")
     public List<Instruktur> findByEmail(String email);
 

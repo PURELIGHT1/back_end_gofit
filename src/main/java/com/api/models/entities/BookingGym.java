@@ -30,7 +30,6 @@ public class BookingGym {
     private Member member;
 
     @Column(name = "tgl_booking_gym")
-    // @Temporal(TemporalType.DATE)
     private String tglBooking;
 
     @Column(name = "tgl_create_booking_gym")

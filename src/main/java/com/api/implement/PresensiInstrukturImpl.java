@@ -5,15 +5,14 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.api.dto.IjinInstrukturResponse;
 import com.api.dto.PresensiInstrukturRequest;
 import com.api.models.entities.Instruktur;
-import com.api.models.entities.JadwalHarian;
 import com.api.models.entities.PresensiInstruktur;
 import com.api.models.repos.InstrukturRepo;
-import com.api.models.repos.JadwalHarianRepo;
 import com.api.models.repos.PresensiInstrukturRepo;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,9 +20,6 @@ public class PresensiInstrukturImpl {
 
     @Autowired
     private PresensiInstrukturRepo repo;
-
-    @Autowired
-    private JadwalHarianRepo jadwalHarianRepo;
 
     @Autowired
     private JadwalHarianImpl jadwalHarianImpl;
@@ -37,6 +33,30 @@ public class PresensiInstrukturImpl {
     public List<PresensiInstruktur> findAllIzin() {
         // return (List<PresensiInstruktur>) repo.findPresensiIzin();
         return repo.findAll();
+    }
+
+    public List<IjinInstrukturResponse> findAllIzinInstruktur() {
+        List<IjinInstrukturResponse> list = new ArrayList<>();
+        List<PresensiInstruktur> listPI = repo.findPresensiIzinInstruktur();
+        for (int i = 0; i < listPI.size(); i++) {
+            IjinInstrukturResponse izin = new IjinInstrukturResponse();
+
+            PresensiInstruktur PI = listPI.get(i);
+
+            izin.setId(PI.getId());
+            izin.setIdInstruktur(PI.getInstruktur().getId());
+            izin.setInstruktur(PI.getInstruktur().getNama());
+            izin.setInisialInstruktur(PI.getInstruktur().getInisial());
+            izin.setTglpresensi(PI.getTglpresensi());
+            izin.setMulaiGym(PI.getMulaiGym());
+            izin.setAkhirGym(PI.getAkhirGym());
+            izin.setStatus(PI.getStatus());
+            izin.setIdJadwalHarian(PI.getJadwalHarian().getId());
+            izin.setTglJadwal(PI.getJadwalHarian().getTglJadwal());
+
+            list.add(izin);
+        }
+        return list;
     }
 
     public List<PresensiInstruktur> filterAllIzin() {
@@ -59,17 +79,12 @@ public class PresensiInstrukturImpl {
         PresensiInstruktur presensiDB = repo.findById(id).get();
         presensiDB.setStatus("C");
 
+        jadwalHarianImpl.editJadwalHarian(presensiDB.getJadwalHarian().getId());
+
+        Instruktur instrukturDB = instrukturImpl.findByIdInstruktur(presensiDB.getInstruktur().getId());
+        instrukturDB.setJlhLibur(instrukturDB.getJlhLibur() + 1);
+        instrukturRepo.save(instrukturDB);
         repo.save(presensiDB);
-        Date now = new Date();
-
-        List<JadwalHarian> jadwalHarian = repo.findJadwalHarianByIdInsBysesi(presensiDB.getInstruktur(), now,
-                presensiDB.getMulaiGym(), presensiDB.getAkhirGym());
-
-        int i = 0;
-        for (i = 0; i <= jadwalHarian.size(); i++) {
-            jadwalHarianImpl.editJadwalHarian(jadwalHarian.get(i).getId());
-        }
-        jadwalHarianRepo.saveAll(jadwalHarian);
     }
 
     public void tolakIzin(String id) {
@@ -77,7 +92,6 @@ public class PresensiInstrukturImpl {
         presensiDB.setStatus("D");
 
         repo.save(presensiDB);
-        ;
     }
 
     public PresensiInstruktur findByIdPresensi(String id) {
@@ -91,7 +105,7 @@ public class PresensiInstrukturImpl {
 
         db.setId("PI-" + generateString + "-" + instrukturDB.getInisial());
         db.setInstruktur(instrukturDB);
-        db.setTglpresensi(req.getTglpresensi());
+        // db.setTglpresensi(req.getTglpresensi());
         db.setMulaiGym(req.getMulaiGym());
         db.setAkhirGym(req.getAkhirGym());
         db.setStatus("PE");

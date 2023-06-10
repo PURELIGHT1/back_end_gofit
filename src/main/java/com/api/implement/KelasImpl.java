@@ -1,11 +1,13 @@
 package com.api.implement;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.api.dto.ResponseSelectInt;
 import com.api.exception.kelas.*;
 import com.api.implement.services.KelasService;
 import com.api.models.entities.Kelas;
@@ -51,6 +53,35 @@ public class KelasImpl implements KelasService {
     @Override
     public List<Kelas> findAll() {
         return (List<Kelas>) kelasRepo.findAll();
+    }
+
+    @Override
+    public List<Kelas> findAllASC() {
+        return (List<Kelas>) kelasRepo.findAllASC();
+    }
+
+    @Override
+    public List<ResponseSelectInt> findKelasAktif() {
+        List<ResponseSelectInt> list = new ArrayList<>();
+        List<Kelas> kelas = kelasRepo.findAll();
+        kelas.forEach(i -> {
+            ResponseSelectInt responseSelect = new ResponseSelectInt();
+            responseSelect.setLabel(i.getNama());
+            responseSelect.setValue(i.getId());
+            // responseSelect.setValue(i.getId()).toString());
+            list.add(responseSelect);
+        });
+        return list;
+    }
+
+    @Override
+    public List<String> findAllKelasRepot() {
+        List<String> list = new ArrayList<>();
+        List<Kelas> kelas = kelasRepo.findAll();
+        for (int i = 0; i < kelas.size(); i++) {
+            list.add(kelas.get(i).getNama());
+        }
+        return list;
     }
 
     @Override

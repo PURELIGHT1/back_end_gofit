@@ -1,5 +1,7 @@
 package com.api.models.repos;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -13,4 +15,7 @@ public interface JadwalUmumRepo extends JpaRepository<JadwalUmum, String> {
 
     @Query("select count(ju) from JadwalUmum ju where ju.hariJadwal =?1 and ju.sesiJadwal =?2 and ju.instruktur =?3")
     public Integer countAllJadwalKosong(String hari, Integer sesi, Instruktur instruktur);
+
+    @Query("select ju from JadwalUmum ju where ju.hariJadwal =?1")
+    public List<JadwalUmum> findAllJadwalByDay(String hari);
 }

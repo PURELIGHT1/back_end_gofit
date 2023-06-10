@@ -1,5 +1,6 @@
 package com.api.implement;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.api.dto.ResponseSelect;
 import com.api.dto.UbahPasswordRequest;
 import com.api.exception.instruktur.InstrukturExceptionBadRequest;
 import com.api.exception.instruktur.InstrukturExceptionNotFound;
@@ -15,7 +17,6 @@ import com.api.implement.builder.GenerateImpl;
 import com.api.implement.services.InstrukturService;
 import com.api.models.UserRole;
 import com.api.models.entities.Instruktur;
-import com.api.models.entities.JadwalHarian;
 import com.api.models.entities.User;
 import com.api.models.entities.token.Token;
 import com.api.models.repos.InstrukturRepo;
@@ -39,9 +40,6 @@ public class InstrukturImpl implements InstrukturService {
 
     @Autowired
     private GenerateImpl generateImpl;
-
-    @Autowired
-    private JadwalHarianImpl jadwalHarianImpl;
 
     @Override
     public List<Instruktur> findByEmail(String email) {
@@ -154,12 +152,42 @@ public class InstrukturImpl implements InstrukturService {
     }
 
     @Override
+    public void aktifInstruktur(String id) {
+        Instruktur instrukturDB = findByIdInstruktur(id);
+        instrukturDB.setStatus("A");
+        instrukturRepo.save(instrukturDB);
+
+        // insert to user
+        User userDB = new User();
+        userDB.setUserLogin(instrukturDB.getEmail());
+        String encodedPassword = bCryptPasswordEncoder.encode(instrukturDB.getNoHp());
+        userDB.setPasswordLogin(encodedPassword);
+
+        userDB.setUserRole(UserRole.INSTRUKTUR);
+        userDB.setInstruktur(instrukturDB);
+        userRepo.save(userDB);
+    }
+
+    @Override
     public List<Instruktur> findAll() {
-        return (List<Instruktur>) instrukturRepo.findInstruktur();
+        return (List<Instruktur>) instrukturRepo.findInstrukturUrut();
     }
 
     public List<Instruktur> findAllAsc() {
         return (List<Instruktur>) instrukturRepo.findInstrukturASC();
+    }
+
+    @Override
+    public List<ResponseSelect> findInstrukturAktif() {
+        List<ResponseSelect> list = new ArrayList<>();
+        List<Instruktur> instruktur = instrukturRepo.findInstrukturAktif();
+        instruktur.forEach(i -> {
+            ResponseSelect responseSelect = new ResponseSelect();
+            responseSelect.setLabel(i.getInisial());
+            responseSelect.setValue(i.getId());
+            list.add(responseSelect);
+        });
+        return list;
     }
 
     @Override

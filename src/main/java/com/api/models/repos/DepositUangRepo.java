@@ -14,5 +14,5 @@ public interface DepositUangRepo extends JpaRepository<TransaksiDepositUang, Str
     public List<TransaksiDepositUang> findAllTransaksiDepositKelas(Member member);
 
     @Query("select sum(du.jlhDeposit) from TransaksiDepositUang du where du.status = 'P' and extract(month from du.tglDeposit) = ?1 and extract(year from du.tglDeposit) = ?2")
-    public Integer findLaporanAktivasi(Integer bulan, Integer tahun);
+    public Integer findLaporanPendapatan(Integer bulan, Integer tahun);
 }

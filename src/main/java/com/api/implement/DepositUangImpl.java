@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.api.dto.DepositUangRequest;
+import com.api.dto.TransaksiDepositUangResponse;
 import com.api.implement.builder.GenerateImpl;
 import com.api.models.entities.Member;
 import com.api.models.entities.Pegawai;
@@ -13,6 +14,7 @@ import com.api.models.repos.DepositUangRepo;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,8 +36,41 @@ public class DepositUangImpl {
     @Autowired
     private PromoImpl promoImpl;
 
-    public List<TransaksiDepositUang> findAll() {
-        return (List<TransaksiDepositUang>) repo.findAll();
+    // public List<TransaksiDepositUang> findAll() {
+    // return (List<TransaksiDepositUang>) repo.findAll();
+    // }
+
+    public List<TransaksiDepositUangResponse> findAll() {
+        List<TransaksiDepositUang> listDU = repo.findAll();
+
+        List<TransaksiDepositUangResponse> list = new ArrayList<>();
+
+        for (int i = 0; i < listDU.size(); i++) {
+            TransaksiDepositUangResponse DB = new TransaksiDepositUangResponse();
+            TransaksiDepositUang DU = listDU.get(i);
+
+            DB.setId(DU.getId());
+            DB.setPegawai(DU.getPegawai().getNama());
+            DB.setIdPegawai(DU.getPegawai().getId());
+            DB.setIdMember(DU.getMember().getId());
+            DB.setMember(DU.getMember().getNama());
+
+            Promo promo = DU.getPromo();
+            if (promo == null) {
+                DB.setPromo("-");
+            } else {
+                DB.setPromo(promo.getJenis());
+                DB.setIdPromo(promo.getId());
+            }
+
+            DB.setJlhDeposit(DU.getJlhDeposit());
+            DB.setTglDeposit(DU.getTglDeposit());
+            DB.setTotalDeposit(DU.getTotalDeposit());
+            DB.setStatus(DU.getStatus());
+
+            list.add(DB);
+        }
+        return list;
     }
 
     public List<TransaksiDepositUang> findAllByMember(String id) {

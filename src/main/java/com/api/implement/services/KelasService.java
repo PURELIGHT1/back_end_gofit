@@ -1,11 +1,18 @@
 package com.api.implement.services;
 
+import com.api.dto.ResponseSelectInt;
 import com.api.models.entities.Kelas;
 import java.util.List;
 
 public interface KelasService {
 
     List<Kelas> findAll();
+
+    List<Kelas> findAllASC();
+
+    List<String> findAllKelasRepot();
+
+    List<ResponseSelectInt> findKelasAktif();
 
     Kelas findByIdKelas(Integer id);
 

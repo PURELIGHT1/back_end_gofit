@@ -53,7 +53,7 @@ public class Member {
     private String creator;
 
     @Column(name = "modifier_member")
-    private Integer modifier;
+    private String modifier;
 
     @Column(name = "modified_time_member")
     @Temporal(TemporalType.TIMESTAMP)

@@ -37,6 +37,13 @@ public class DepositKelasController {
     @Autowired
     private MemberImpl memberImpl;
 
+    // @GetMapping("/deposit_kelas")
+    // public ResponseEntity<Object> findAllDepositKelas() {
+    // return ResponseHandler.responseEntity("Berhasil mengambil seluruh data",
+    // HttpStatus.OK,
+    // impl.findAll());
+    // }
+
     @GetMapping("/deposit_kelas")
     public ResponseEntity<Object> findAllDepositKelas() {
         return ResponseHandler.responseEntity("Berhasil mengambil seluruh data",
@@ -44,7 +51,7 @@ public class DepositKelasController {
                 impl.findAll());
     }
 
-    @PostMapping(value = "/deposit_kelas", consumes = { "application/xml", "application/json" })
+    @PostMapping(value = "/deposit_kelas")
     public ResponseEntity<Object> createDepositUang(@RequestBody @Validated DepositKelasRequest request) {
 
         Kelas kelasDB = kelasImpl.findByIdKelas(request.getKelas());
@@ -52,19 +59,25 @@ public class DepositKelasController {
         Member memberDB = memberImpl.findByIdMember(request.getMember());
         TransaksiDepositKelas cekMember = repo.cekTransaksiDepositKelas(memberDB);
         if (cekMember == null) {
-            return ResponseHandler.responseEntity("Berhasil menambah data",
-                    HttpStatus.OK,
-                    impl.createTransaksi(request));
+            if (memberDB.getSisaDeposit() > totalDeposit) {
+                return ResponseHandler.responseEntity("Berhasil menambah data",
+                        HttpStatus.OK,
+                        impl.createTransaksi(request));
+            } else {
+                return ResponseHandler.responseEntity("Deposit tidak mencukupi",
+                        HttpStatus.BAD_REQUEST,
+                        null);
+            }
         } else {
             if (cekMember.getSisaKelas() == 0) {
-                if (totalDeposit > memberDB.getSisaDeposit()) {
-                    return ResponseHandler.responseEntity("Deposit tidak mencukupi",
-                            HttpStatus.BAD_REQUEST,
-                            null);
-                } else {
+                if (memberDB.getSisaDeposit() > totalDeposit) {
                     return ResponseHandler.responseEntity("Berhasil menambah data",
                             HttpStatus.OK,
                             impl.createTransaksi(request));
+                } else {
+                    return ResponseHandler.responseEntity("Deposit tidak mencukupi",
+                            HttpStatus.BAD_REQUEST,
+                            null);
                 }
             } else {
                 return ResponseHandler.responseEntity("Sisa paket sebelumnya belum habis",

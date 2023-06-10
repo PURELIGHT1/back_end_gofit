@@ -16,7 +16,6 @@ import com.api.models.UserRole;
 import com.api.models.entities.Pegawai;
 import com.api.models.entities.User;
 import com.api.models.repos.PegawaiRepo;
-import com.api.models.repos.TokenRepo;
 import com.api.models.repos.UserRepo;
 
 @Service
@@ -30,9 +29,6 @@ public class PegawaiImpl implements PegawaiService {
 
     @Autowired
     private UserRepo userRepo;
-
-    @Autowired
-    private TokenRepo tokenRepo;
 
     @Autowired
     private GenerateImpl generateImpl;

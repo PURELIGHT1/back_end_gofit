@@ -11,7 +11,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -65,9 +64,9 @@ public class MemberController {
 
     @GetMapping("/members/aktif")
     public ResponseEntity<Object> findAllMemberAktiv() {
-
+        // memberService.findAllAktif())
         return ResponseHandler.responseEntity("Berhasil mengambil seluruh data", HttpStatus.OK,
-                memberService.findAllAktif());
+                memberService.findAllAktifSelect());
     }
 
     @GetMapping("/members/{id}")
@@ -95,7 +94,7 @@ public class MemberController {
     // userRepo.findByAktivasi());
     // }
 
-    @PostMapping(value = "members", consumes = { "application/xml", "application/json" })
+    @PostMapping(value = "members")
     public ResponseEntity<Object> createMember(@RequestBody @Validated Member member) {
         Member cekMember = repo.findEmailMember(member.getEmail());
         if (cekMember == null) {
@@ -148,6 +147,17 @@ public class MemberController {
 
         Member memberDB = memberService.findByIdMember(id);
         memberService.deleteMember(id);
+        return ResponseHandler.responseEntity("Berhasil hapus data",
+                HttpStatus.ACCEPTED,
+                memberDB);
+
+    }
+
+    @PutMapping("/members/aktif/{id}")
+    public ResponseEntity<Object> aktifmemberr(@PathVariable("id") String id) {
+
+        Member memberDB = memberService.findByIdMember(id);
+        memberService.aktifMember(id);
         return ResponseHandler.responseEntity("Berhasil hapus data",
                 HttpStatus.ACCEPTED,
                 memberDB);

@@ -60,6 +60,14 @@ public class InstrukturController {
                 instrukturService.findAll());
     }
 
+    @GetMapping("/instrukturs/aktif")
+    public ResponseEntity<Object> findAllInstrukturAktif() {
+
+        return ResponseHandler.responseEntity("Berhasil mengambil seluruh data",
+                HttpStatus.OK,
+                instrukturService.findInstrukturAktif());
+    }
+
     @GetMapping("/instrukturs/{id}")
     public ResponseEntity<Object> getByIdInstruktur(@PathVariable("id") String id) {
 
@@ -79,8 +87,7 @@ public class InstrukturController {
                 instrukturDB);
     }
 
-    @PostMapping(value = "instrukturs", consumes = { "application/xml",
-            "application/json" })
+    @PostMapping(value = "instrukturs")
     public ResponseEntity<Object> createInstruktur(@RequestBody @Validated Instruktur instruktur) {
 
         return ResponseHandler.responseEntity("Berhasil menambah data",
@@ -119,6 +126,17 @@ public class InstrukturController {
 
         Instruktur instrukturDB = instrukturService.findByIdInstruktur(id);
         instrukturService.deleteInstruktur(id);
+        return ResponseHandler.responseEntity("Berhasil hapus data",
+                HttpStatus.ACCEPTED,
+                instrukturDB);
+
+    }
+
+    @PutMapping("/instrukturs/aktif/{id}")
+    public ResponseEntity<Object> aktifInstruktur(@PathVariable("id") String id) {
+
+        Instruktur instrukturDB = instrukturService.findByIdInstruktur(id);
+        instrukturService.aktifInstruktur(id);
         return ResponseHandler.responseEntity("Berhasil hapus data",
                 HttpStatus.ACCEPTED,
                 instrukturDB);

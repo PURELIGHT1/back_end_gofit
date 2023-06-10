@@ -23,5 +23,5 @@ public interface TransaksiAktivasiRepo extends JpaRepository<TransaksiAktivasi, 
     public List<TransaksiAktivasi> findAllTAMember(Member member);
 
     @Query("select sum(ta.jlhBayar) from TransaksiAktivasi ta where ta.status = 'P' and extract(month from ta.tglAktiviasi) = ?1 and extract(year from ta.tglAktiviasi) = ?2")
-    public Integer findLaporanAktivasi(Integer bulan, Integer tahun);
+    public Integer findLaporanPendapatan(Integer bulan, Integer tahun);
 }

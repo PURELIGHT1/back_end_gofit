@@ -1,5 +1,7 @@
 package com.api.implement.builder;
 
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -7,6 +9,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.api.dto.AuthenticationRequest;
 import com.api.dto.AuthenticationResponse;
+import com.api.dto.TokenResponse;
 import com.api.models.TokenType;
 import com.api.models.UserRole;
 import com.api.models.entities.GenerateTabel;
@@ -34,7 +38,10 @@ import com.api.models.repos.PromoRepo;
 import com.api.models.repos.TokenRepo;
 import com.api.models.repos.UserRepo;
 import com.api.security.JwtService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -69,6 +76,9 @@ public class UserImpl {
     private PegawaiRepo pegawaiRepo;
 
     @Autowired
+    private JwtService JwtService;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
@@ -85,7 +95,8 @@ public class UserImpl {
 
         // Tambah Generate Table
         if (userTemp.getId() == 1) {
-            GenerateTabel generateTabel = new GenerateTabel(1, 0, 2, 0, 100, false);
+            Date now = new Date();
+            GenerateTabel generateTabel = new GenerateTabel(1, 0, 2, 0, 100, now);
             generateRepo.save(generateTabel);
         }
 
@@ -124,7 +135,7 @@ public class UserImpl {
         }
         User mo = new User();
         mo.setUserLogin(pegawaiBD.getEmail());
-        String encodedPasswordMo = bCryptPasswordEncoder.encode(pegawaiBD.getNoHp());
+        String encodedPasswordMo = bCryptPasswordEncoder.encode("123456");
         mo.setPasswordLogin(encodedPasswordMo);
         mo.setUserRole(UserRole.MO);
         mo.setPegawai(pegawaiBD);
@@ -136,7 +147,7 @@ public class UserImpl {
         }
         User kasir = new User();
         kasir.setUserLogin(pegawaiBD2.getEmail());
-        String encodedPasswordKasir = bCryptPasswordEncoder.encode(pegawaiBD2.getNoHp());
+        String encodedPasswordKasir = bCryptPasswordEncoder.encode("123456");
         kasir.setPasswordLogin(encodedPasswordKasir);
         kasir.setUserRole(UserRole.KASIR);
         kasir.setPegawai(pegawaiBD2);
@@ -217,6 +228,10 @@ public class UserImpl {
 
         Kode kode18 = Kode.build(18, "BP", "Belum Presensi");
 
+        Kode kode19 = Kode.build(19, "Block", "Block");
+
+        Kode kode20 = Kode.build(20, "BOOK", "Booking");
+
         kodeRepo.save(kode);
         kodeRepo.save(kode2);
         kodeRepo.save(kode3);
@@ -235,6 +250,8 @@ public class UserImpl {
         kodeRepo.save(kode16);
         kodeRepo.save(kode17);
         kodeRepo.save(kode18);
+        kodeRepo.save(kode19);
+        kodeRepo.save(kode20);
         return userDB;
     }
 
@@ -269,8 +286,10 @@ public class UserImpl {
         User userDB = repo.findByUserLogin(request.getUsername()).orElseThrow();
         // if (userDB != null) {
         String jwtToken = jwtService.generateToken(userDB);
+        String refreshToken = jwtService.generateRefreshToken(userDB);
         AuthenticationResponse authenticationResponse = AuthenticationResponse.builder()
                 .token(jwtToken)
+                .refreshToken(refreshToken)
                 .username(request.getUsername())
                 .id(userDB.getId())
                 .role(userDB.getUserRole())
@@ -287,6 +306,32 @@ public class UserImpl {
         // return AuthenticationResponse
         // }
 
+    }
+
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String refreshToken;
+        final String userLogin;
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return;
+        }
+
+        refreshToken = authHeader.substring(7);
+        userLogin = JwtService.extractUsername(refreshToken);
+
+        if (userLogin != null) {
+            var user = repo.findByUserLogin(userLogin).orElseThrow();
+            if (JwtService.isTokenValid(refreshToken, user)) {
+
+                var accessToken = jwtService.generateToken(user);
+                var authResponse = TokenResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+            }
+        }
     }
 
     private void revokeAllUserToken(User user) {

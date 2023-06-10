@@ -5,10 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.api.dto.MulaiKelasResponse;
-import com.api.models.entities.GenerateTabel;
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.JadwalHarian;
-import com.api.models.entities.Kelas;
+import com.api.models.entities.JadwalUmum;
 import com.api.models.entities.PresensiInstruktur;
 import com.api.models.repos.GenerateRepo;
 import com.api.models.repos.JadwalHarianRepo;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 @Service
 public class JadwalHarianImpl {
@@ -29,19 +27,19 @@ public class JadwalHarianImpl {
     private JadwalHarianRepo repo;
 
     @Autowired
+    private GenerateRepo generateRepo;
+
+    @Autowired
     private InstrukturImpl instrukturImpl;
 
     @Autowired
-    private KelasImpl kelasImpl;
+    private JadwalUmumImpl jadwalUmumImpl;
 
     @Autowired
     private PresensiInstrukturRepo presensiInstrukturRepo;
 
     @Autowired
     private JadwalHarianRepo jadwalHarianRepo;
-
-    @Autowired
-    private GenerateRepo generateRepo;
 
     public List<JadwalHarian> findAllJadwalHarianByDate(Date awal, Date akhir) {
         DateFormat dateFormatCekTangal = new SimpleDateFormat("Y-MM-dd");
@@ -460,10 +458,7 @@ public class JadwalHarianImpl {
 
     public List<JadwalHarian> createJadwalharian() {
         List<JadwalHarian> list = new ArrayList<>();
-        List<Instruktur> instrukturDB = instrukturImpl.findAll();
-        List<Kelas> kelasDB = kelasImpl.findAll();
 
-        // cek jadwal
         for (int i = 0; i < 7; i++) {
             Date tanggal = new Date();
             Calendar c = Calendar.getInstance();
@@ -489,108 +484,169 @@ public class JadwalHarianImpl {
                 hari = "Sabtu";
             }
 
-            for (int j = 0; j < 4; j++) {
-                Integer sesi = j + 1;
+            List<JadwalUmum> listJadwalUmum = jadwalUmumImpl.findJadwalUmumByDay(hari);
 
-                Calendar c2 = Calendar.getInstance();
-                c2.setTime(tanggal);
-                c2.add(Calendar.DATE, 7);
-                Date akhir = c2.getTime();
+            for (int j = 0; j < listJadwalUmum.size(); j++) {
+                JadwalUmum jadwalUmum = listJadwalUmum.get(j);
+                JadwalHarian jadwalHarianDB = new JadwalHarian();
 
-                Random DiceIns = new Random();
-                int m = DiceIns.nextInt(instrukturDB.size());
-                Instruktur instruktur = instrukturDB.get(m);
+                // DateFormat dateFormatCekTangal = new SimpleDateFormat("Y-MM-dd");
+                // String current = dateFormatCekTangal.format(tanggal);
+                DateFormat dateFormatID = new SimpleDateFormat("YY.MM");
+                String generateId = dateFormatID.format(tanggal);
 
-                DateFormat dateFormatCekTangal = new SimpleDateFormat("Y-MM-dd");
-                String current = dateFormatCekTangal.format(tanggal);
-                String last = dateFormatCekTangal.format(akhir);
+                String generateString = RandomStringUtils.randomAlphanumeric(11);
+                jadwalHarianDB.setId("JH." + generateId + "." + generateString);
 
-                JadwalHarian cekJH = repo.findJadwalHarianInstruktur(hari, sesi, instruktur, current, last);
-                if (cekJH == null) {
-                    DateFormat dateFormatID = new SimpleDateFormat("YY.MM");
-                    Date date = new Date();
-                    String currentDateTime = dateFormatID.format(date);
+                jadwalHarianDB.setInstruktur(jadwalUmum.getInstruktur());
+                jadwalHarianDB.setKelas(jadwalUmum.getKelas());
+                // jadwalHarianDB.setTglJadwal(current);
+                jadwalHarianDB.setTglJadwal(tanggal);
+                jadwalHarianDB.setHariJadwal(jadwalUmum.getHariJadwal());
+                jadwalHarianDB.setSesiJadwal(jadwalUmum.getSesiJadwal());
+                jadwalHarianDB.setStatus("S");
 
-                    JadwalHarian jadwalHarianDB = new JadwalHarian();
-                    String generateString = RandomStringUtils.randomAlphanumeric(11);
-                    jadwalHarianDB.setId("JH." + currentDateTime + "." + generateString);
-
-                    jadwalHarianDB.setInstruktur(instruktur);
-
-                    Random DiceKelas = new Random();
-                    int n = DiceKelas.nextInt(kelasDB.size());
-                    jadwalHarianDB.setKelas(kelasDB.get(n));
-
-                    jadwalHarianDB.setTglJadwal(current);
-                    jadwalHarianDB.setHariJadwal(hari);
-                    jadwalHarianDB.setSesiJadwal(sesi);
-                    jadwalHarianDB.setStatus("S");
-                    repo.save(jadwalHarianDB);
-                    list.add(jadwalHarianDB);
-                }
+                list.add(jadwalHarianDB);
+                repo.save(jadwalHarianDB);
             }
-
+            generateRepo.updateGenereteJadwalByGenerateTabel(tanggal);
         }
-        // for (int i = 0; i < kelasDB.size(); i++) {
-        // JadwalHarian jadwalHarianDB = new JadwalHarian();
-        // String generateString = RandomStringUtils.randomAlphanumeric(15);
-        // jadwalHarianDB.setId("JH_" + generateString);
-
-        // Random Dice = new Random();
-        // int m = Dice.nextInt(instrukturDB.size());
-        // jadwalHarianDB.setInstruktur(instrukturDB.get(m));
-        // jadwalHarianDB.setKelas(kelasDB.get(i));
-
-        // // LocalDate tanggalSekarang = LocalDate.now();
-        // // LocalDate tanggal = tanggalSekarang.plusDays(i);
-        // Date tanggal = new Date();
-        // Calendar c = Calendar.getInstance();
-        // c.setTime(tanggal);
-        // c.add(Calendar.DATE, i + 1);
-        // tanggal = c.getTime();
-        // jadwalHarianDB.setTglJadwal(tanggal);
-
-        // DateFormat dateFormat = new SimpleDateFormat("EEEEE");
-        // String hari = dateFormat.format(c.getTime());
-        // if (hari.equals("Sunday")) {
-        // hari = "Minggu";
-        // } else if (hari.equals("Monday")) {
-        // hari = "Senin";
-        // } else if (hari.equals("Tuesday")) {
-        // hari = "Selasa";
-        // } else if (hari.equals("Wednesday")) {
-        // hari = "Rabu";
-        // } else if (hari.equals("Thursday")) {
-        // hari = "Kamis";
-        // } else if (hari.equals("Friday")) {
-        // hari = "Jumat";
-        // } else if (hari.equals("Saturday")) {
-        // hari = "Sabtu";
-        // }
-        // // String[] hari = { "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu",
-        // // "Minggu" };
-        // // Random Dice2 = new Random();
-        // // int n = Dice2.nextInt(6);
-        // jadwalHarianDB.setHariJadwal(hari);
-
-        // // for (int k = 0; k < 5; k++) {
-
-        // Integer[] sesi = { 1, 2, 3, 4 };
-        // Random Dice3 = new Random();
-        // int o = Dice3.nextInt(4);
-        // jadwalHarianDB.setSesiJadwal(sesi[o]);
-        // // }
-        // jadwalHarianDB.setStatus("S");
-        // list.add(jadwalHarianDB);
-        // }
-        // repo.saveAll(list);
-
-        GenerateTabel generateTabel = generateRepo.findById(1).get();
-        generateTabel.setGenerateJadwal(true);
-        generateRepo.save(generateTabel);
-
         return list;
     }
+
+    // public List<JadwalHarian> createJadwalharian() {
+    // List<JadwalHarian> list = new ArrayList<>();
+    // List<Instruktur> instrukturDB = instrukturImpl.findAll();
+    // List<Kelas> kelasDB = kelasImpl.findAll();
+
+    // // cek jadwal
+    // for (int i = 0; i < 7; i++) {
+    // Date tanggal = new Date();
+    // Calendar c = Calendar.getInstance();
+    // c.setTime(tanggal);
+    // c.add(Calendar.DATE, i + 1);
+    // tanggal = c.getTime();
+
+    // DateFormat dateFormat = new SimpleDateFormat("EEEEE");
+    // String hari = dateFormat.format(c.getTime());
+    // if (hari.equals("Sunday")) {
+    // hari = "Minggu";
+    // } else if (hari.equals("Monday")) {
+    // hari = "Senin";
+    // } else if (hari.equals("Tuesday")) {
+    // hari = "Selasa";
+    // } else if (hari.equals("Wednesday")) {
+    // hari = "Rabu";
+    // } else if (hari.equals("Thursday")) {
+    // hari = "Kamis";
+    // } else if (hari.equals("Friday")) {
+    // hari = "Jumat";
+    // } else if (hari.equals("Saturday")) {
+    // hari = "Sabtu";
+    // }
+
+    // for (int j = 0; j < 4; j++) {
+    // Integer sesi = j + 1;
+
+    // Calendar c2 = Calendar.getInstance();
+    // c2.setTime(tanggal);
+    // c2.add(Calendar.DATE, 7);
+    // Date akhir = c2.getTime();
+
+    // Random DiceIns = new Random();
+    // int m = DiceIns.nextInt(instrukturDB.size());
+    // Instruktur instruktur = instrukturDB.get(m);
+
+    // DateFormat dateFormatCekTangal = new SimpleDateFormat("Y-MM-dd");
+    // String current = dateFormatCekTangal.format(tanggal);
+    // String last = dateFormatCekTangal.format(akhir);
+
+    // JadwalHarian cekJH = repo.findJadwalHarianInstruktur(hari, sesi, instruktur,
+    // current, last);
+    // if (cekJH == null) {
+    // DateFormat dateFormatID = new SimpleDateFormat("YY.MM");
+    // Date date = new Date();
+    // String currentDateTime = dateFormatID.format(date);
+
+    // JadwalHarian jadwalHarianDB = new JadwalHarian();
+    // String generateString = RandomStringUtils.randomAlphanumeric(11);
+    // jadwalHarianDB.setId("JH." + currentDateTime + "." + generateString);
+
+    // jadwalHarianDB.setInstruktur(instruktur);
+
+    // Random DiceKelas = new Random();
+    // int n = DiceKelas.nextInt(kelasDB.size());
+    // jadwalHarianDB.setKelas(kelasDB.get(n));
+
+    // jadwalHarianDB.setTglJadwal(current);
+    // jadwalHarianDB.setHariJadwal(hari);
+    // jadwalHarianDB.setSesiJadwal(sesi);
+    // jadwalHarianDB.setStatus("S");
+    // repo.save(jadwalHarianDB);
+    // list.add(jadwalHarianDB);
+    // }
+    // }
+
+    // }
+    // for (int i = 0; i < kelasDB.size(); i++) {
+    // JadwalHarian jadwalHarianDB = new JadwalHarian();
+    // String generateString = RandomStringUtils.randomAlphanumeric(15);
+    // jadwalHarianDB.setId("JH_" + generateString);
+
+    // Random Dice = new Random();
+    // int m = Dice.nextInt(instrukturDB.size());
+    // jadwalHarianDB.setInstruktur(instrukturDB.get(m));
+    // jadwalHarianDB.setKelas(kelasDB.get(i));
+
+    // // LocalDate tanggalSekarang = LocalDate.now();
+    // // LocalDate tanggal = tanggalSekarang.plusDays(i);
+    // Date tanggal = new Date();
+    // Calendar c = Calendar.getInstance();
+    // c.setTime(tanggal);
+    // c.add(Calendar.DATE, i + 1);
+    // tanggal = c.getTime();
+    // jadwalHarianDB.setTglJadwal(tanggal);
+
+    // DateFormat dateFormat = new SimpleDateFormat("EEEEE");
+    // String hari = dateFormat.format(c.getTime());
+    // if (hari.equals("Sunday")) {
+    // hari = "Minggu";
+    // } else if (hari.equals("Monday")) {
+    // hari = "Senin";
+    // } else if (hari.equals("Tuesday")) {
+    // hari = "Selasa";
+    // } else if (hari.equals("Wednesday")) {
+    // hari = "Rabu";
+    // } else if (hari.equals("Thursday")) {
+    // hari = "Kamis";
+    // } else if (hari.equals("Friday")) {
+    // hari = "Jumat";
+    // } else if (hari.equals("Saturday")) {
+    // hari = "Sabtu";
+    // }
+    // // String[] hari = { "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu",
+    // // "Minggu" };
+    // // Random Dice2 = new Random();
+    // // int n = Dice2.nextInt(6);
+    // jadwalHarianDB.setHariJadwal(hari);
+
+    // // for (int k = 0; k < 5; k++) {
+
+    // Integer[] sesi = { 1, 2, 3, 4 };
+    // Random Dice3 = new Random();
+    // int o = Dice3.nextInt(4);
+    // jadwalHarianDB.setSesiJadwal(sesi[o]);
+    // // }
+    // jadwalHarianDB.setStatus("S");
+    // list.add(jadwalHarianDB);
+    // }
+    // repo.saveAll(list);
+
+    // GenerateTabel generateTabel = generateRepo.findById(1)
+    // .get();generateTabel.setGenerateJadwal(true);generateRepo.save(generateTabel);
+
+    // return list;
+    // }
 
     public MulaiKelasResponse mulaiKelas(String idJadwal) {
         MulaiKelasResponse DB = new MulaiKelasResponse();
@@ -623,7 +679,7 @@ public class JadwalHarianImpl {
 
             presensiInstrukturDB.setId("PK-" + generateString + "-" + inisial);
             presensiInstrukturDB.setInstruktur(jadwalHarianDB.getInstrukturPeganti());
-            presensiInstrukturDB.setTglpresensi(tgl);
+            // presensiInstrukturDB.setTglpresensi(tgl);
             presensiInstrukturDB.setMulaiGym(jadwalHarianDB.getSesiJadwal());
             presensiInstrukturDB.setStatus("AP");
             presensiInstrukturDB.setKeterangan("presensi_kelas");
@@ -662,7 +718,7 @@ public class JadwalHarianImpl {
 
             presensiInstrukturDB.setId("PK-" + generateString + "-" + inisial);
             presensiInstrukturDB.setInstruktur(jadwalHarianDB.getInstruktur());
-            presensiInstrukturDB.setTglpresensi(tgl);
+            // presensiInstrukturDB.setTglpresensi(tgl);
             presensiInstrukturDB.setMulaiGym(jadwalHarianDB.getSesiJadwal());
             presensiInstrukturDB.setStatus("AP");
             presensiInstrukturDB.setKeterangan("presensi_kelas");

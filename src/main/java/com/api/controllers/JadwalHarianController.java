@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.implement.JadwalHarianImpl;
+import com.api.models.entities.GenerateTabel;
 import com.api.models.entities.JadwalHarian;
 import com.api.models.repos.GenerateRepo;
 import com.api.models.repos.JadwalHarianRepo;
@@ -103,18 +105,34 @@ public class JadwalHarianController {
 
     }
 
-    @PutMapping(value = "jadwal_harian/generate")
+    // @PutMapping(value = "jadwal_harian/generate")
+    // public ResponseEntity<Object> createJadwalHarian() {
+
+    // boolean statusGenerate = generateRepo.findgenerateJadwalByGenerateTabel(1);
+    // if (statusGenerate == true) {
+    // return ResponseHandler.responseEntity("Gagal menambahkan data, karena minggu
+    // ini sudah ada jadwal harian",
+    // HttpStatus.BAD_REQUEST,
+    // null);
+    // } else {
+    // return ResponseHandler.responseEntity("Berhasil generate data",
+    // HttpStatus.CREATED,
+    // impl.createJadwalharian());
+    // }
+    // }
+
+    @PostMapping(value = "jadwal_harian/generate")
     public ResponseEntity<Object> createJadwalHarian() {
 
-        boolean statusGenerate = generateRepo.findgenerateJadwalByGenerateTabel(1);
-        if (statusGenerate == true) {
-            return ResponseHandler.responseEntity("Gagal menambahkan data, karena minggu ini sudah ada jadwal harian",
-                    HttpStatus.BAD_REQUEST,
-                    null);
-        } else {
+        Date tanggal = new Date();
+        GenerateTabel cek = generateRepo.findById(1).get();
+        if (tanggal.compareTo(cek.getGenerateJadwal()) == 1) {
+
             return ResponseHandler.responseEntity("Berhasil generate data",
                     HttpStatus.CREATED,
                     impl.createJadwalharian());
+        } else {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 

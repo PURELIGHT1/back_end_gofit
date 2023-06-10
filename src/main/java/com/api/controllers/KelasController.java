@@ -27,28 +27,44 @@ public class KelasController {
     private KelasService kelasService;
 
     @GetMapping("/kelas")
-    public ResponseEntity<Object> findAllPromo() {
+    public ResponseEntity<Object> findAllKelas() {
 
         return ResponseHandler.responseEntity("Berhasil mengambil seluruh data", HttpStatus.OK,
                 kelasService.findAll());
     }
 
+    @GetMapping("/kelas/aktif")
+    public ResponseEntity<Object> findAllKelasAktif() {
+
+        return ResponseHandler.responseEntity("Berhasil mengambil seluruh data",
+                HttpStatus.OK,
+                kelasService.findKelasAktif());
+    }
+
+    @GetMapping("/kelas/all")
+    public ResponseEntity<Object> findAllKelasRepot() {
+
+        return ResponseHandler.responseEntity("Berhasil mengambil seluruh data",
+                HttpStatus.OK,
+                kelasService.findAllKelasRepot());
+    }
+
     @GetMapping("/kelas/{id}")
-    public ResponseEntity<Object> getByIdPromo(@PathVariable("id") Integer id) {
+    public ResponseEntity<Object> getByIdKelas(@PathVariable("id") Integer id) {
 
         return ResponseHandler.responseEntity("Berhasil mengambil data", HttpStatus.OK,
                 kelasService.findByIdKelas(id));
     }
 
     @PostMapping(value = "kelas", consumes = { "application/xml", "application/json" })
-    public ResponseEntity<Object> createPromo(@RequestBody @Validated Kelas kelas) {
+    public ResponseEntity<Object> createKelas(@RequestBody @Validated Kelas kelas) {
 
         return ResponseHandler.responseEntity("Berhasil menambah data", HttpStatus.CREATED,
                 kelasService.createKelas(kelas));
     }
 
     @PutMapping("/kelas/{id}")
-    public ResponseEntity<Object> updatePromo(@PathVariable("id") Integer id,
+    public ResponseEntity<Object> updateKelas(@PathVariable("id") Integer id,
             @RequestBody @Validated Kelas kelas) {
 
         return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.CREATED,
@@ -59,11 +75,11 @@ public class KelasController {
     @DeleteMapping("/kelas/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable("id") Integer id) {
 
-        Kelas promoDB = kelasService.findByIdKelas(id);
+        Kelas KelasDB = kelasService.findByIdKelas(id);
         kelasService.deleteKelas(id);
 
         return ResponseHandler.responseEntity("Berhasil hapus data", HttpStatus.OK,
-                promoDB);
+                KelasDB);
 
     }
 

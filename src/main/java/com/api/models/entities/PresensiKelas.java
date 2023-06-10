@@ -25,20 +25,20 @@ public class PresensiKelas {
     @JoinColumn(name = "id_booking_kelas", nullable = false)
     private BookingKelas bookingKelas;
 
-    @ManyToOne
-    @JoinColumn(name = "id_instruktur", nullable = false)
-    private Instruktur instruktur;
+    // @ManyToOne
+    // @JoinColumn(name = "id_instruktur", nullable = false)
+    // private Instruktur instruktur;
 
-    @ManyToOne
-    @JoinColumn(name = "id_member", nullable = false)
-    private Member member;
+    // @ManyToOne
+    // @JoinColumn(name = "id_member", nullable = false)
+    // private Member member;
 
-    @Column(name = "tgl_booking_kelas")
-    @Temporal(TemporalType.DATE)
-    private Date tglBooking;
+    // @Column(name = "tgl_booking_kelas")
+    // @Temporal(TemporalType.DATE)
+    // private Date tglBooking;
 
     @Column(name = "tgl_presensi_kelas")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date tglpresensi;
 
     @Column(name = "cretor_presensi")

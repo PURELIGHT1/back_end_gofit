@@ -1,11 +1,15 @@
 package com.api.models.entities;
 
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.Data;
 
 @Entity
@@ -29,8 +33,9 @@ public class JadwalHarian {
     private Kelas kelas;
 
     @Column(name = "tgl_jadwal_harian")
-    // @Temporal(TemporalType.DATE)
-    private String tglJadwal;
+    @Temporal(TemporalType.DATE)
+    // private String tglJadwal;
+    private Date tglJadwal;
 
     @Column(name = "hari_jadwal_harian", length = 20)
     private String hariJadwal;

@@ -24,21 +24,17 @@ public class BookingKelas {
     @JoinColumn(name = "id_member", nullable = false)
     private Member member;
 
-    @ManyToOne
-    @JoinColumn(name = "id_kelas", nullable = false)
-    private Kelas kelas;
+    // @ManyToOne
+    // @JoinColumn(name = "id_kelas", nullable = false)
+    // private Kelas kelas;
 
-    @ManyToOne
-    @JoinColumn(name = "id_promo", nullable = true)
-    private Promo promo;
+    // @ManyToOne
+    // @JoinColumn(name = "id_promo", nullable = true)
+    // private Promo promo;
 
     @Column(name = "tgl_booking_kelas")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date tglBooking;
-
-    @Column(name = "tgl_create_booking_kelas")
-    @Temporal(TemporalType.DATE)
-    private Date tglBuat;
 
     @ManyToOne
     @JoinColumn(name = "jadwal_booking_kelas", nullable = false)

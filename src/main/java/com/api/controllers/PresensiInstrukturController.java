@@ -26,6 +26,31 @@ public class PresensiInstrukturController {
     @Autowired
     private PresensiInstrukturImpl impl;
 
+    // ijin Instruktur
+    @GetMapping("/ijin_instruktur")
+    public ResponseEntity<Object> findAllIzinInstruktur() {
+
+        return ResponseHandler.responseEntity("Berhasil mengambil seluruh data", HttpStatus.OK,
+                impl.findAllIzinInstruktur());
+    }
+
+    @PutMapping("/ijin_instruktur/{id}")
+    public ResponseEntity<Object> konfirmasiPresensiIzin(@PathVariable("id") String id) {
+        PresensiInstruktur presensiInstruktur = impl.findByIdPresensi(id);
+        impl.konfirmasiIzin(id);
+        return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.CREATED,
+                presensiInstruktur);
+    }
+
+    @PutMapping("/ijin_instruktur/tolak/{id}")
+    public ResponseEntity<Object> tolakPresensiIzin(@PathVariable("id") String id) {
+        PresensiInstruktur presensiInstruktur = impl.findByIdPresensi(id);
+        impl.tolakIzin(id);
+        return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.CREATED,
+                presensiInstruktur);
+    }
+
+    // Presensi Instruktur
     @GetMapping("/presensi_instruktur")
     public ResponseEntity<Object> findAllIzin() {
 
@@ -45,22 +70,6 @@ public class PresensiInstrukturController {
 
         return ResponseHandler.responseEntity("Berhasil mengambil seluruh data", HttpStatus.OK,
                 impl.findAllIzinById(id));
-    }
-
-    @PutMapping("/presensi_instruktur/{id}")
-    public ResponseEntity<Object> konfirmasiPresensiIzin(@PathVariable("id") String id) {
-        PresensiInstruktur presensiInstruktur = impl.findByIdPresensi(id);
-        impl.konfirmasiIzin(id);
-        return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.CREATED,
-                presensiInstruktur);
-    }
-
-    @PutMapping("/presensi_instruktur/tolak/{id}")
-    public ResponseEntity<Object> tolakPresensiIzin(@PathVariable("id") String id) {
-        PresensiInstruktur presensiInstruktur = impl.findByIdPresensi(id);
-        impl.tolakIzin(id);
-        return ResponseHandler.responseEntity("Berhasil mengubah data", HttpStatus.CREATED,
-                presensiInstruktur);
     }
 
     @PostMapping("/presensi_instruktur")

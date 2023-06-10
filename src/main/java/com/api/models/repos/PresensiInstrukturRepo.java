@@ -11,10 +11,16 @@ import java.util.Date;
 import java.util.List;
 
 public interface PresensiInstrukturRepo extends JpaRepository<PresensiInstruktur, String> {
-        @Query("SELECT pi From PresensiInstruktur pi where pi.status='PE' and pi.keterangan = 'presensi_izin'")
+        @Query("SELECT pi From PresensiInstruktur pi where pi.keterangan = 'PI' order by pi.status desc")
+        public List<PresensiInstruktur> findPresensiIzinInstruktur();
+
+        @Query("SELECT pi From PresensiInstruktur pi where pi.status='PE' and pi.keterangan = 'PI'")
         public List<PresensiInstruktur> findPresensiIzin();
 
-        @Query("SELECT pi From PresensiInstruktur pi where pi.instruktur= ?1 and pi.keterangan = 'presensi_kelas'")
+        @Query("SELECT pi From PresensiInstruktur pi where  pi.keterangan = 'PI' and pi.jadwalHarian= ?1")
+        public PresensiInstruktur findPresensiIzinByIdAndJadwal(JadwalHarian jadwalHarian);
+
+        @Query("SELECT pi From PresensiInstruktur pi where pi.instruktur= ?1 and pi.keterangan = 'PK'")
         public List<PresensiInstruktur> findPresensiIzinById(Instruktur instruktur);
 
         @Query("select jh from JadwalHarian jh where jh.instruktur=?1 and jh.tglJadwal =?2 and jh.sesiJadwal between ?3 and ?4")

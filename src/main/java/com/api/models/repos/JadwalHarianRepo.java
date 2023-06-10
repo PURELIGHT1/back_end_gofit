@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.JadwalHarian;
+import com.api.models.entities.Kelas;
 
 import java.util.Date;
 import java.util.List;
@@ -13,6 +14,15 @@ public interface JadwalHarianRepo extends JpaRepository<JadwalHarian, String> {
 
     @Query("select j from JadwalHarian j where j.instruktur = ?1")
     public List<JadwalHarian> findJadwalIns(Instruktur ins);
+
+    @Query("select j from JadwalHarian j where cast(j.kelas as int) = ?1 and extract(month from j.tglJadwal) = ?2 and extract(year from j.tglJadwal) =?3")
+    public List<JadwalHarian> findJadwalKelas(Integer kelas, Integer bulan, Integer tahun);
+
+    @Query("select j from JadwalHarian j where cast(j.kelas as int) = ?1 order by j.instruktur, j.instrukturPeganti asc")
+    public List<JadwalHarian> findJadwalKelasInsASC(Integer kelas);
+
+    @Query("SELECT count(j.id) FROM JadwalHarian j WHERE cast(j.kelas as int) = ?1 and j.status = 'L' and extract(month from j.tglJadwal) = ?2 and extract(year from j.tglJadwal) = ?3")
+    public Integer getTotalLibur(Integer kelas, Integer bulan, Integer tahun);
 
     @Query("select j from JadwalHarian j where j.instruktur = ?1 or j.instrukturPeganti = ?1 order by j.tglJadwal desc, j.sesiJadwal asc")
     public List<JadwalHarian> findJadwalInsAll(Instruktur ins);
@@ -23,7 +33,7 @@ public interface JadwalHarianRepo extends JpaRepository<JadwalHarian, String> {
     @Query("select count(j) from JadwalHarian j where CAST(j.kelas as int) = ?1 and j.status = 'L'")
     public Integer findJadwalInsOneLibur(Integer idKelas);
 
-    @Query("select j from JadwalHarian j where j.tglJadwal between ?1 and ?2")
+    @Query("select j from JadwalHarian j where CAST(j.tglJadwal as text) between ?1 and ?2")
     public List<JadwalHarian> findJadwalSatuMinggu(String tglAwal, String tglAkhir);
 
     @Query("select j from JadwalHarian j where j.tglJadwal between ?1 and ?2 and j.instruktur = ?3")

@@ -25,6 +25,9 @@ public interface MemberRepo extends JpaRepository<Member, String> {
     @Query("select m from Member m where m.status = 'A'")
     public List<Member> findMemberAktif();
 
+    @Query("select m from Member m order by m.status asc")
+    public List<Member> findAllMember();
+
     @Modifying
     @Transactional
     @Query("UPDATE generate gr SET gr.generateIdMember = ?1 WHERE gr.id = ?2")

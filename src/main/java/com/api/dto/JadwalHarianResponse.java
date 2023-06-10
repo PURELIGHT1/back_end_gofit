@@ -1,5 +1,7 @@
 package com.api.dto;
 
+import java.util.Date;
+
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.Kelas;
 
@@ -15,7 +17,7 @@ public class JadwalHarianResponse {
     private Instruktur instruktur;
     private Instruktur instrukturPeganti;
     private Kelas kelas;
-    private String tglJadwal;
+    private Date tglJadwal;
     private String hariJadwal;
     private Integer sesiJadwal;
     private String status;

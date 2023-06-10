@@ -15,13 +15,12 @@ import com.api.implement.DepositKelasImpl;
 import com.api.implement.DepositUangImpl;
 import com.api.implement.MemberImpl;
 import com.api.implement.PresensiGymImpl;
-import com.api.implement.PresensiKelasImpl;
+// import com.api.implement.PresensiKelasImpl;
 import com.api.implement.TransaksiAktivasiImpl;
 import com.api.models.entities.BookingGym;
 import com.api.models.entities.BookingKelas;
 import com.api.models.entities.Member;
 import com.api.models.entities.PresensiGym;
-import com.api.models.entities.PresensiKelas;
 import com.api.models.entities.TransaksiAktivasi;
 import com.api.models.entities.TransaksiDepositKelas;
 import com.api.models.entities.TransaksiDepositUang;
@@ -41,8 +40,8 @@ public class ProfileMemberImpl {
     @Autowired
     private PresensiGymImpl presensiGymImpl;
 
-    @Autowired
-    private PresensiKelasImpl presensiKelasImpl;
+    // @Autowired
+    // private PresensiKelasImpl presensiKelasImpl;
 
     @Autowired
     private TransaksiAktivasiImpl transaksiAktivasiImpl;
@@ -61,7 +60,8 @@ public class ProfileMemberImpl {
         List<PresensiGym> listPresensiGyym = presensiGymImpl.findAllByMember(id);
         List<BookingKelas> listBookingKelas = bookingKelasImpl.findAllByMember(id);
         List<PresensiGym> listPresensiGym = presensiGymImpl.findAllByMember(id);
-        List<PresensiKelas> listPresensiKelas = presensiKelasImpl.findAllByMember(id);
+        // List<PresensiKelas> listPresensiKelas =
+        // presensiKelasImpl.findAllByMember(id);
         List<TransaksiAktivasi> listTransaksiAktivasi = transaksiAktivasiImpl.findByMember(id);
         List<TransaksiDepositKelas> listTransaksiDepositKelas = depositKelasImpl.findAllByMember(id);
         List<TransaksiDepositUang> listTransaksiDepositUang = depositUangImpl.findAllByMember(id);
@@ -83,7 +83,7 @@ public class ProfileMemberImpl {
         DB.setListBookingGym(listBookingGym);
         DB.setListBookingKelas(listBookingKelas);
         DB.setListPresensiGym(listPresensiGym);
-        DB.setListPresensiKelas(listPresensiKelas);
+        // DB.setListPresensiKelas(listPresensiKelas);
         DB.setListTransaksiAktivasi(listTransaksiAktivasi);
         DB.setListTransaksiDepositUang(listTransaksiDepositUang);
         DB.setListTransaksiDepositKelas(listTransaksiDepositKelas);

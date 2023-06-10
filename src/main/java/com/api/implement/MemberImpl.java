@@ -2,6 +2,7 @@ package com.api.implement;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.api.dto.ResponseSelect;
 import com.api.dto.UbahPasswordRequest;
 import com.api.exception.member.*;
 import com.api.implement.builder.GenerateImpl;
@@ -21,7 +23,6 @@ import com.api.models.entities.Pegawai;
 import com.api.models.entities.TransaksiAktivasi;
 import com.api.models.entities.User;
 import com.api.models.repos.MemberRepo;
-import com.api.models.repos.TokenRepo;
 import com.api.models.repos.TransaksiAktivasiRepo;
 import com.api.models.repos.UserRepo;
 
@@ -33,9 +34,6 @@ public class MemberImpl implements MemberService {
 
     @Autowired
     private UserRepo userRepo;
-
-    @Autowired
-    private TokenRepo tokenRepo;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -186,16 +184,44 @@ public class MemberImpl implements MemberService {
     public void deleteMember(String id) {
         Member memberDB = memberRepo.findById(id).get();
         User userDB = memberRepo.findUserMember(memberDB).get(0);
-        TransaksiAktivasi transaksiAktivasiDB = transaksiAktivasiRepo.findTAMember(memberDB);
-        transaksiAktivasiRepo.deleteById(transaksiAktivasiDB.getId());
         userRepo.deleteById(userDB.getId());
         memberDB.setStatus("I");
         memberRepo.save(memberDB);
     }
 
     @Override
+    public void aktifMember(String id) {
+        Member memberDB = memberRepo.findById(id).get();
+        memberDB.setStatus("A");
+        memberRepo.save(memberDB);
+
+        // insert to user
+        User userDB = new User();
+        userDB.setUserLogin(memberDB.getEmail());
+        DateFormat dateFormat2 = new SimpleDateFormat("Y-MM-dd");
+        String tglLahir = dateFormat2.format(memberDB.getTglLahir());
+        String encodedPassword = bCryptPasswordEncoder.encode(tglLahir);
+        userDB.setPasswordLogin(encodedPassword);
+        userDB.setUserRole(UserRole.MEMBER);
+        userDB.setMember(memberDB);
+    }
+
+    @Override
+    public List<ResponseSelect> findAllAktifSelect() {
+        List<ResponseSelect> list = new ArrayList<>();
+        List<Member> instruktur = memberRepo.findMemberAktif();
+        instruktur.forEach(i -> {
+            ResponseSelect responseSelect = new ResponseSelect();
+            responseSelect.setLabel(i.getNama());
+            responseSelect.setValue(i.getId());
+            list.add(responseSelect);
+        });
+        return list;
+    }
+
+    @Override
     public List<Member> findAll() {
-        return (List<Member>) memberRepo.findAll();
+        return (List<Member>) memberRepo.findAllMember();
     }
 
     @Override
@@ -253,7 +279,6 @@ public class MemberImpl implements MemberService {
         memberDB.setTglLahir(member.getTglLahir());
         memberDB.setNoHp(member.getNoHp());
         memberDB.setModifier(member.getModifier());
-        memberDB.setStatus(member.getStatus());
 
         Date date = new Date();
         memberDB.setModified_time(date);
