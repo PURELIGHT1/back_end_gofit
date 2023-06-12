@@ -5,15 +5,19 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.api.models.entities.Instruktur;
 import com.api.models.entities.JadwalHarian;
-import com.api.models.entities.Kelas;
 
 import java.util.Date;
 import java.util.List;
 
 public interface JadwalHarianRepo extends JpaRepository<JadwalHarian, String> {
 
-    @Query("select j from JadwalHarian j where j.instruktur = ?1")
-    public List<JadwalHarian> findJadwalIns(Instruktur ins);
+    @Query("select j from JadwalHarian j where cast(j.instruktur as text)= ?1")
+    public List<JadwalHarian> findJadwalIns(String ins);
+
+    @Query("select j from JadwalHarian j where cast(j.instruktur as text) = ?1 " +
+            "and extract(month from j.tglJadwal) = ?2 " +
+            "and extract(year from j.tglJadwal) =?3")
+    public List<JadwalHarian> findJadwalInsByMonthAndYear(String ins, Integer bulan, Integer tahun);
 
     @Query("select j from JadwalHarian j where cast(j.kelas as int) = ?1 and extract(month from j.tglJadwal) = ?2 and extract(year from j.tglJadwal) =?3")
     public List<JadwalHarian> findJadwalKelas(Integer kelas, Integer bulan, Integer tahun);

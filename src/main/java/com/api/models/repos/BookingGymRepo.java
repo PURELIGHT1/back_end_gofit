@@ -13,6 +13,9 @@ public interface BookingGymRepo extends JpaRepository<BookingGym, String> {
     @Query("SELECT bg FROM BookingGym bg WHERE bg.status = 'S'")
     public List<BookingGym> findAllBookingGym();
 
+    @Query("SELECT bg FROM BookingGym bg WHERE bg.status = 'S' and tglBooking = ?1")
+    public List<BookingGym> findAllBookingGymToday(String tgl);
+
     @Query("SELECT bg FROM BookingGym bg WHERE bg.member = ?1")
     public List<BookingGym> findAllBookingGymById(Member member);
 
@@ -25,6 +28,8 @@ public interface BookingGymRepo extends JpaRepository<BookingGym, String> {
     @Query("select bg from BookingGym bg where bg.sesi =?1 and bg.tglBooking = ?2 and member = ?3")
     public BookingGym cekBooking(Integer sesi, String tgl, Member member);
 
+    @Query("select count(bg.id) from BookingGym bg where bg.status = 'E' and bg.tglBooking = ?1")
+    public Integer getJlhMemberGym(String tgl);
     // @Query("select 10-count(bg.id) as slot from BookingGym bg where bg.sesi =?1
     // and bg.tglBooking = ?2")
     // public BookingGym cekSlotPerBooking(String tgl, Integer sesi, Member member);

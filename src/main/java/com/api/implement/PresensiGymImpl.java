@@ -3,11 +3,18 @@ package com.api.implement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.api.dto.PresensiGymRequest;
+import com.api.dto.PresensiGymResponse;
+import com.api.implement.builder.GenerateImpl;
 import com.api.models.entities.BookingGym;
-import com.api.models.entities.Member;
+import com.api.models.entities.Pegawai;
 import com.api.models.entities.PresensiGym;
+import com.api.models.repos.BookingGymRepo;
 import com.api.models.repos.PresensiGymRepo;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,21 +25,46 @@ public class PresensiGymImpl {
     private PresensiGymRepo repo;
 
     @Autowired
-    private MemberImpl memberImpl;
+    private GenerateImpl generateImpl;
+
+    @Autowired
+    private PegawaiImpl pegawaiImpl;
 
     @Autowired
     private BookingGymImpl bookingGymImpl;
 
-    public List<PresensiGym> findAll() {
+    public List<PresensiGymResponse> findAll() {
+        List<PresensiGym> list = repo.findAll();
+        List<PresensiGymResponse> listResponse = new ArrayList<>();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        return (List<PresensiGym>) repo.findAll();
+        for (int i = 0; i < list.size(); i++) {
+            PresensiGymResponse response = new PresensiGymResponse();
+            PresensiGym pg = list.get(i);
+
+            response.setId(pg.getId());
+            response.setIdMember(pg.getBookingGym().getMember().getId());
+            response.setMember(pg.getBookingGym().getMember().getNama());
+            response.setTglpresensi(pg.getBookingGym().getTglBooking());
+            response.setMulaiGym(pg.getBookingGym().getSesi());
+            response.setAkhirGym(pg.getAkhirGym());
+            response.setStatus(pg.getStatus());
+
+            listResponse.add(response);
+        }
+        return listResponse;
     }
 
-    public List<PresensiGym> findAllByMember(String id) {
+    // public List<PresensiGym> findAll() {
 
-        Member memberDB = memberImpl.findByIdMember(id);
-        return (List<PresensiGym>) repo.findAllPresensiGymMember(memberDB);
-    }
+    // return (List<PresensiGym>) repo.findAll();
+    // }
+
+    // public List<PresensiGym> findAllByMember(String id) {
+
+    // Member memberDB = memberImpl.findByIdMember(id);
+    // return (List<PresensiGym>) repo.findAllPresensiGymMember(memberDB);
+    // }
 
     // public List<PresensiGymBookingResponse> findAllPresensiBooking() {
     // List<PresensiGymBookingResponse> list = new ArrayList<>();
@@ -47,17 +79,30 @@ public class PresensiGymImpl {
     // return list;
     // }
 
-    public PresensiGym createPresensi(String id) {
+    public PresensiGym createPresensi(PresensiGymRequest req) {
 
-        PresensiGym DB = findPresensiById(id);
+        PresensiGym DB = new PresensiGym();
+        BookingGym bookingGymDB = bookingGymImpl.findBookingById(req.getBooking());
+        Pegawai pegawaiDB = pegawaiImpl.findByIdPegawai(req.getPegawai());
         Date now = new Date();
-        DB.setTglpresensi(now);
-        DB.setAkhirGym(DB.getMulaiGym() + 1);
+
         DB.setStatus("G");
-        String idBooking = DB.getBookingGym().getId();
-        BookingGym bookingGymDB = bookingGymImpl.findBookingById(idBooking);
+        DB.setAkhirGym(bookingGymDB.getSesi() + 1);
+        DB.setBookingGym(bookingGymDB);
+        DB.setPegawai(pegawaiDB);
+
         bookingGymDB.setStatus("G");
         bookingGymImpl.update(bookingGymDB);
+
+        DateFormat dateFormat = new SimpleDateFormat("YY.MM");
+        String currentDateTime = dateFormat.format(now);
+
+        Integer counter2 = generateImpl.findGenerateStruk(1);
+        if (counter2 != 0) {
+            counter2 += 1;
+            DB.setId(currentDateTime + "." + counter2);
+            generateImpl.updateGenereteStruk(counter2);
+        }
         return repo.save(DB);
     }
 
@@ -69,8 +114,7 @@ public class PresensiGymImpl {
     public PresensiGym updateDataPresensi(String id) {
         PresensiGym DB = findPresensiById(id);
         DB.setStatus("E");
-        String idBooking = DB.getBookingGym().getId();
-        BookingGym bookingGymDB = bookingGymImpl.findBookingById(idBooking);
+        BookingGym bookingGymDB = bookingGymImpl.findBookingById(DB.getBookingGym().getId());
         bookingGymDB.setStatus("E");
         bookingGymImpl.update(bookingGymDB);
         return repo.save(DB);

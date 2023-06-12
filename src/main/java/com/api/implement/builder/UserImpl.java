@@ -174,7 +174,6 @@ public class UserImpl {
         Kelas kelas17 = new Kelas(17, "Yoga For Kids", 150000, 10);
         Kelas kelas18 = new Kelas(18, "Abs Pilates", 150000, 10);
         Kelas kelas19 = new Kelas(19, "Swing For Kids", 150000, 10);
-        Kelas kelas20 = new Kelas(20, "SPINE", 150000, 10);
 
         listKelas.add(kelas);
         listKelas.add(kelas2);
@@ -195,7 +194,6 @@ public class UserImpl {
         listKelas.add(kelas17);
         listKelas.add(kelas18);
         listKelas.add(kelas19);
-        listKelas.add(kelas20);
         kelasRepo.saveAll(listKelas);
 
         // pegawai, instruktur, member,

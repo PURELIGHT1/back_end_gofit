@@ -43,6 +43,13 @@ public class BookingGymController {
                 impl.findAll());
     }
 
+    @GetMapping("/booking_gym/today")
+    public ResponseEntity<Object> findBookingById() {
+
+        return ResponseHandler.responseEntity("Berhasil mengambil data", HttpStatus.OK,
+                impl.findAllBookingToday());
+
+    }
     // @GetMapping("/booking_gym/{id}")
     // public ResponseEntity<Object> findAllBookingById(@PathVariable("id") String
     // id) {

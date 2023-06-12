@@ -25,7 +25,7 @@ public class PresensiInstruktur {
     private Instruktur instruktur;
 
     @Column(name = "tgl_presensi_instruktur")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date tglpresensi;
 
     @Column(name = "sesi_mulai_presensi_instruktur")

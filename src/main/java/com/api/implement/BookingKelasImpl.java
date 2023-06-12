@@ -28,4 +28,8 @@ public class BookingKelasImpl {
         return (List<BookingKelas>) repo.findAllByMember(memberDB);
     }
 
+    public List<BookingKelas> findAllByJadwal(String id) {
+        return (List<BookingKelas>) repo.findAllBookingJadwal(id);
+    }
+
 }

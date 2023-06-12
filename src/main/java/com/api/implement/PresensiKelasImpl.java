@@ -1,5 +1,6 @@
 package com.api.implement;
 
+import java.util.ArrayList;
 // import java.text.DateFormat;
 // import java.text.SimpleDateFormat;
 // import java.util.ArrayList;
@@ -8,6 +9,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.api.dto.ResponsePresensiKelas;
 import com.api.models.entities.PresensiKelas;
 import com.api.models.repos.PresensiKelasRepo;
 
@@ -17,9 +20,31 @@ public class PresensiKelasImpl {
     @Autowired
     private PresensiKelasRepo repo;
 
-    public List<PresensiKelas> findAll() {
+    public List<ResponsePresensiKelas> findAll() {
 
-        return (List<PresensiKelas>) repo.findAll();
+        List<ResponsePresensiKelas> pk = new ArrayList<>();
+
+        List<PresensiKelas> listPk = repo.findAll();
+
+        listPk.forEach(i -> {
+            ResponsePresensiKelas response = new ResponsePresensiKelas();
+            response.setId(i.getId());
+            response.setMember(i.getBookingKelas().getMember().getNama());
+            response.setIdMember(i.getBookingKelas().getMember().getId());
+            response.setIdKelas(i.getBookingKelas().getJadwal().getKelas().getId());
+            response.setKelas(i.getBookingKelas().getJadwal().getKelas().getNama());
+            if (i.getBookingKelas().getJadwal().getInstrukturPeganti() == null) {
+                response.setIdInstruktur(i.getBookingKelas().getJadwal().getInstruktur().getId());
+                response.setInstruktur(i.getBookingKelas().getJadwal().getInstruktur().getInisial());
+            } else {
+                response.setIdInstruktur(i.getBookingKelas().getJadwal().getInstrukturPeganti().getId());
+                response.setInstruktur(i.getBookingKelas().getJadwal().getInstrukturPeganti().getInisial());
+            }
+            response.setStatus(i.getStatus());
+            response.setTgl(i.getTglpresensi());
+            pk.add(response);
+        });
+        return pk;
     }
 
     // public List<PresensiKelas> findAllByMember(String id) {

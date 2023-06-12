@@ -33,21 +33,6 @@ public class PresensiGym {
     @JoinColumn(name = "id_pegawai", nullable = false)
     private Pegawai pegawai;
 
-    @ManyToOne
-    @JoinColumn(name = "id_member", nullable = false)
-    private Member member;
-
-    @Column(name = "tgl_presensi_gym")
-    @Temporal(TemporalType.DATE)
-    private Date tglpresensi;
-
-    @Column(name = "tgl_booking_gym")
-    // @Temporal(TemporalType.DATE)
-    private String tglBooking;
-
-    @Column(name = "sesi_mulai_presensi")
-    private Integer mulaiGym;
-
     @Column(name = "sesi_akhir_presensi")
     private Integer akhirGym;
 

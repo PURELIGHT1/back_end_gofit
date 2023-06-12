@@ -17,6 +17,8 @@ public interface BookingKelasRepo extends JpaRepository<BookingKelas, String> {
     @Query("SELECT count(bk.id) FROM BookingKelas bk WHERE bk.jadwal = ?1")
     public Integer findAllMemberBooking(JadwalHarian jadwal);
 
+    @Query("SELECT bk FROM BookingKelas bk WHERE CAST(bk.jadwal as text) = ?1")
+    public List<BookingKelas> findAllBookingJadwal(String jadwal);
     // @Query("SELECT count(bk.id) FROM BookingKelas bk WHERE cast(bk.jadwal as
     // text) = ?1")
     // public Integer findAllMember(String jadwal);

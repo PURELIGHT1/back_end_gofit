@@ -20,6 +20,12 @@ public interface PresensiInstrukturRepo extends JpaRepository<PresensiInstruktur
         @Query("SELECT pi From PresensiInstruktur pi where  pi.keterangan = 'PI' and pi.jadwalHarian= ?1")
         public PresensiInstruktur findPresensiIzinByIdAndJadwal(JadwalHarian jadwalHarian);
 
+        @Query("SELECT pi From PresensiInstruktur pi where pi.keterangan = 'PK' " +
+                        "and CAST(pi.instruktur as text) = ?1 " +
+                        "and extract(month from pi.tglpresensi) = ?2 " +
+                        "and extract(year from pi.tglpresensi) =?3")
+        public List<PresensiInstruktur> findPresensiIzinByLate(String ins, Integer bulan, Integer tahun);
+
         @Query("SELECT pi From PresensiInstruktur pi where pi.instruktur= ?1 and pi.keterangan = 'PK'")
         public List<PresensiInstruktur> findPresensiIzinById(Instruktur instruktur);
 
@@ -35,4 +41,7 @@ public interface PresensiInstrukturRepo extends JpaRepository<PresensiInstruktur
                         "and pi.status= ?5")
         public PresensiInstruktur findPresensiInstruktur(Instruktur idIns, String tgl, Integer sesiAwal, String ket,
                         String status);
+
+        @Query("SELECT count(pi.id) From PresensiInstruktur pi where pi.keterangan = 'PK' and pi.status = 'E' and cast(pi.jadwalHarian as text) = ?1")
+        public Integer totalPresensiKelas(String jadwalHarian);
 }

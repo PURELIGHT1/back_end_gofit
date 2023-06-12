@@ -15,6 +15,10 @@ import com.api.models.repos.PresensiInstrukturRepo;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -62,130 +66,65 @@ public class JadwalHarianImpl {
     }
 
     public List<JadwalHarian> findAllJadwalHarianKhususUmum() {
-        Date cek = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("EEEEE");
 
-        String hari = dateFormat.format(cek);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEE");
+        DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("Y-MM-dd");
+        ZoneId z = ZoneId.of("Asia/Jakarta");
+        LocalDateTime now = LocalDateTime.now(z);
+        LocalDate curDateCounter = LocalDate.now(z);
+        String hari = dtf.format(now);
+        if (hari.equals("Mon")) {
+            LocalDate nextDate = curDateCounter.plusDays(6);
 
-        if (hari.equals("Monday")) {
-            Date awal = new Date();
-            Date akhir = new Date();
-            Calendar c = Calendar.getInstance();
-            c.setTime(awal);
-            c.add(Calendar.DATE, 6);
-            akhir = c.getTime();
-
-            DateFormat dateFormatCekTangal = new SimpleDateFormat("Y-MM-dd");
-            String current = dateFormatCekTangal.format(awal);
-            String next = dateFormatCekTangal.format(akhir);
+            String current = dtf2.format(curDateCounter);
+            String next = dtf2.format(nextDate);
 
             return (List<JadwalHarian>) repo.findJadwalSatuMinggu(current, next);
-        } else if (hari.equals("Sunday")) {
-            Date awal = new Date();
-            Date akhir = new Date();
-            Calendar c = Calendar.getInstance();
-            c.setTime(awal);
-            c.add(Calendar.DATE, -6);
-            awal = c.getTime();
+        } else if (hari.equals("Tue")) {
 
-            DateFormat dateFormatCekTangal = new SimpleDateFormat("Y-MM-dd");
-            String current = dateFormatCekTangal.format(awal);
-            String next = dateFormatCekTangal.format(akhir);
+            LocalDate curDate = curDateCounter.plusDays(-1);
+            LocalDate nextDate = curDateCounter.plusDays(5);
+            String current = dtf2.format(curDate);
+            String next = dtf2.format(nextDate);
 
             return (List<JadwalHarian>) repo.findJadwalSatuMinggu(current, next);
-        } else if (hari.equals("Tuesday")) {
-            Date awal = new Date();
-            Date akhir = new Date();
+        } else if (hari.equals("Wed")) {
 
-            Calendar c = Calendar.getInstance();
-            c.setTime(awal);
-            c.add(Calendar.DATE, -1);
-            awal = c.getTime();
-
-            Calendar c2 = Calendar.getInstance();
-            c2.setTime(akhir);
-            c2.add(Calendar.DATE, 5);
-            akhir = c2.getTime();
-
-            DateFormat dateFormatCekTangal = new SimpleDateFormat("Y-MM-dd");
-            String current = dateFormatCekTangal.format(awal);
-            String next = dateFormatCekTangal.format(akhir);
+            LocalDate curDate = curDateCounter.plusDays(-2);
+            LocalDate nextDate = curDateCounter.plusDays(4);
+            String current = dtf2.format(curDate);
+            String next = dtf2.format(nextDate);
 
             return (List<JadwalHarian>) repo.findJadwalSatuMinggu(current, next);
-        } else if (hari.equals("Wednesday")) {
-            Date awal = new Date();
-            Date akhir = new Date();
+        } else if (hari.equals("Thu")) {
 
-            Calendar c = Calendar.getInstance();
-            c.setTime(awal);
-            c.add(Calendar.DATE, -2);
-            awal = c.getTime();
-
-            Calendar c2 = Calendar.getInstance();
-            c2.setTime(akhir);
-            c2.add(Calendar.DATE, 4);
-            akhir = c2.getTime();
-
-            DateFormat dateFormatCekTangal = new SimpleDateFormat("Y-MM-dd");
-            String current = dateFormatCekTangal.format(awal);
-            String next = dateFormatCekTangal.format(akhir);
+            LocalDate curDate = curDateCounter.plusDays(-3);
+            LocalDate nextDate = curDateCounter.plusDays(3);
+            String current = dtf2.format(curDate);
+            String next = dtf2.format(nextDate);
 
             return (List<JadwalHarian>) repo.findJadwalSatuMinggu(current, next);
-        } else if (hari.equals("Thursday")) {
-            Date awal = new Date();
-            Date akhir = new Date();
+        } else if (hari.equals("Fri")) {
 
-            Calendar c = Calendar.getInstance();
-            c.setTime(awal);
-            c.add(Calendar.DATE, -3);
-            awal = c.getTime();
-
-            Calendar c2 = Calendar.getInstance();
-            c2.setTime(akhir);
-            c2.add(Calendar.DATE, 3);
-            akhir = c2.getTime();
-
-            DateFormat dateFormatCekTangal = new SimpleDateFormat("Y-MM-dd");
-            String current = dateFormatCekTangal.format(awal);
-            String next = dateFormatCekTangal.format(akhir);
+            LocalDate curDate = curDateCounter.plusDays(-4);
+            LocalDate nextDate = curDateCounter.plusDays(2);
+            String current = dtf2.format(curDate);
+            String next = dtf2.format(nextDate);
 
             return (List<JadwalHarian>) repo.findJadwalSatuMinggu(current, next);
-        } else if (hari.equals("Friday")) {
-            Date awal = new Date();
-            Date akhir = new Date();
+        } else if (hari.equals("Sat")) {
 
-            Calendar c = Calendar.getInstance();
-            c.setTime(awal);
-            c.add(Calendar.DATE, -4);
-            awal = c.getTime();
-
-            Calendar c2 = Calendar.getInstance();
-            c2.setTime(akhir);
-            c2.add(Calendar.DATE, 2);
-            akhir = c2.getTime();
-
-            DateFormat dateFormatCekTangal = new SimpleDateFormat("Y-MM-dd");
-            String current = dateFormatCekTangal.format(awal);
-            String next = dateFormatCekTangal.format(akhir);
+            LocalDate curDate = curDateCounter.plusDays(-5);
+            LocalDate nextDate = curDateCounter.plusDays(1);
+            String current = dtf2.format(curDate);
+            String next = dtf2.format(nextDate);
 
             return (List<JadwalHarian>) repo.findJadwalSatuMinggu(current, next);
-        } else if (hari.equals("Saturday")) {
-            Date awal = new Date();
-            Date akhir = new Date();
-
-            Calendar c = Calendar.getInstance();
-            c.setTime(awal);
-            c.add(Calendar.DATE, -5);
-            awal = c.getTime();
-
-            Calendar c2 = Calendar.getInstance();
-            c2.setTime(akhir);
-            c2.add(Calendar.DATE, 1);
-            akhir = c2.getTime();
-
-            DateFormat dateFormatCekTangal = new SimpleDateFormat("Y-MM-dd");
-            String current = dateFormatCekTangal.format(awal);
-            String next = dateFormatCekTangal.format(akhir);
+        } else if (hari.equals("Sun")) {
+            LocalDate curDate = curDateCounter.plusDays(1);
+            LocalDate nextDate = curDateCounter.plusDays(6);
+            String current = dtf2.format(curDate);
+            String next = dtf2.format(nextDate);
 
             return (List<JadwalHarian>) repo.findJadwalSatuMinggu(current, next);
         } else {
@@ -450,11 +389,19 @@ public class JadwalHarianImpl {
 
     public JadwalHarian editJadwalHarian(String id) {
         JadwalHarian jadwalHarianDB = findJadwalHarianById(id);
+
+        // Instruktur ins =
+        // instrukturImpl.findByIdInstruktur(jadwalHarianDB.getInstruktur().getId());
+        // ins.setJlhLibur(ins.getJlhLibur() + 1);
+        // instrukturRepo.save(ins);
+
         jadwalHarianDB.setInstruktur(null);
         jadwalHarianDB.setInstrukturPeganti(null);
         jadwalHarianDB.setStatus("L");
         return repo.save(jadwalHarianDB);
     }
+    // public List<JadwalHarian> findJadwalInsByMonthAndYear(String ins, Integer
+    // bulan, Integer tahun);
 
     public List<JadwalHarian> createJadwalharian() {
         List<JadwalHarian> list = new ArrayList<>();

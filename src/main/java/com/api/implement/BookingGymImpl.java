@@ -2,6 +2,10 @@ package com.api.implement;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,8 +13,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.api.dto.BookingGymResponse;
+import com.api.dto.ResponseSelect;
 import com.api.implement.builder.GenerateImpl;
 import com.api.models.entities.BookingGym;
+import com.api.models.entities.Instruktur;
 import com.api.models.entities.Member;
 import com.api.models.entities.Pegawai;
 import com.api.models.entities.PresensiGym;
@@ -36,6 +43,38 @@ public class BookingGymImpl {
 
     public List<BookingGym> findAll() {
         return (List<BookingGym>) repo.findAllBookingGym();
+    }
+
+    public List<ResponseSelect> findAllBookingToday() {
+        List<ResponseSelect> list = new ArrayList<>();
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("Y-MM-dd");
+        ZoneId z = ZoneId.of("Asia/Jakarta");
+        LocalDateTime now = LocalDateTime.now(z);
+        String today = dtf.format(now);
+
+        List<BookingGym> bookingGym = repo.findAllBookingGymToday(today);
+        bookingGym.forEach(i -> {
+            ResponseSelect responseSelect = new ResponseSelect();
+            if (i.getSesi() == 1) {
+                responseSelect.setLabel(i.getMember().getNama() + ", 07.00 - 09.00 WIB");
+            } else if (i.getSesi() == 2) {
+                responseSelect.setLabel(i.getMember().getNama() + ", 09.00 - 11.00 WIB");
+            } else if (i.getSesi() == 3) {
+                responseSelect.setLabel(i.getMember().getNama() + ", 11.00 - 13.00 WIB");
+            } else if (i.getSesi() == 4) {
+                responseSelect.setLabel(i.getMember().getNama() + ", 13.00 - 15.00 WIB");
+            } else if (i.getSesi() == 5) {
+                responseSelect.setLabel(i.getMember().getNama() + ", 15.00 - 17.00 WIB");
+            } else if (i.getSesi() == 6) {
+                responseSelect.setLabel(i.getMember().getNama() + ", 17.00 - 19.00 WIB");
+            } else if (i.getSesi() == 2) {
+                responseSelect.setLabel(i.getMember().getNama() + ", 19.00 - 21.00 WIB");
+            }
+            responseSelect.setValue(i.getId());
+            list.add(responseSelect);
+        });
+        return list;
     }
 
     public List<BookingGym> findAllById(String id) {
@@ -83,13 +122,13 @@ public class BookingGymImpl {
         repo.save(DB);
 
         PresensiGym presensiGymDB = new PresensiGym();
-        presensiGymDB.setMember(memberDB);
+        // presensiGymDB.setMember(memberDB);
         presensiGymDB.setBookingGym(DB);
-        presensiGymDB.setTglBooking(DB.getTglBooking());
+        // presensiGymDB.setTglBooking(DB.getTglBooking());
         Pegawai pegawai = pegawaiImpl.findByIdPegawai("P02");
         presensiGymDB.setPegawai(pegawai);
 
-        presensiGymDB.setMulaiGym(bookingGym.getSesi());
+        // presensiGymDB.setMulaiGym(bookingGym.getSesi());
         presensiGymDB.setStatus("S");
 
         // id Presensi GYM

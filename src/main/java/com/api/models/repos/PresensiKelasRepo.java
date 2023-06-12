@@ -10,9 +10,9 @@ public interface PresensiKelasRepo extends JpaRepository<PresensiKelas, Integer>
     // public List<PresensiMemberCustomeResponse> findAllPresensiKelas(String
     // jenis);
 
-    // @Query("select count(bk.id) from BookingKelas bk where CAST(bk.tglBooking as
-    // text) = ?1 and CAST(bk.kelas as int) = ?2")
-    // public Integer getSlotMember(String tgl, Integer kelas);
+    // @Query("select count(pk.id) from PresensiKelas pk where cast(pk.bookingKelas
+    // as text) = ?1 and ")
+    // public Integer getJlhPresensi(String booking);
 
     // @Query("SELECT pk FROM PresensiKelas pk WHERE pk.member = ?1")
     // public List<PresensiKelas> findAllPresensiKelasMember(Member member);

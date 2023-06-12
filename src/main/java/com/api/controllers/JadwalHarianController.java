@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.implement.BookingKelasImpl;
 import com.api.implement.JadwalHarianImpl;
+import com.api.models.entities.BookingKelas;
 import com.api.models.entities.GenerateTabel;
 import com.api.models.entities.JadwalHarian;
 import com.api.models.repos.GenerateRepo;
@@ -29,6 +31,9 @@ public class JadwalHarianController {
 
     @Autowired
     private JadwalHarianImpl impl;
+
+    @Autowired
+    private BookingKelasImpl bookingKelasImpl;
 
     @Autowired
     private GenerateRepo generateRepo;
@@ -98,10 +103,16 @@ public class JadwalHarianController {
 
     @PutMapping(value = "/jadwal_harian/libur/{id}")
     public ResponseEntity<Object> editJadwalHarian(@PathVariable("id") String id) {
-
-        return ResponseHandler.responseEntity("Berhasil hapus data",
-                HttpStatus.ACCEPTED,
-                impl.editJadwalHarian(id));
+        JadwalHarian jadwalHarianDB = impl.findJadwalHarianById(id);
+        if (jadwalHarianDB.getStatus().equals("S")) {
+            return ResponseHandler.responseEntity("Berhasil hapus data",
+                    HttpStatus.ACCEPTED,
+                    impl.editJadwalHarian(id));
+        } else {
+            return ResponseHandler.responseEntity("Gagal hapus data",
+                    HttpStatus.BAD_REQUEST,
+                    null);
+        }
 
     }
 

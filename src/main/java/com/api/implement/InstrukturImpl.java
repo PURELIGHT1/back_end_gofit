@@ -173,8 +173,14 @@ public class InstrukturImpl implements InstrukturService {
         return (List<Instruktur>) instrukturRepo.findInstrukturUrut();
     }
 
+    @Override
     public List<Instruktur> findAllAsc() {
         return (List<Instruktur>) instrukturRepo.findInstrukturASC();
+    }
+
+    @Override
+    public List<Instruktur> findAllAktif() {
+        return (List<Instruktur>) instrukturRepo.findInstruktur();
     }
 
     @Override

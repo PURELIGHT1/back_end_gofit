@@ -10,6 +10,10 @@ public interface InstrukturService {
 
     List<Instruktur> findAll();
 
+    List<Instruktur> findAllAktif();
+
+    List<Instruktur> findAllAsc();
+
     List<ResponseSelect> findInstrukturAktif();
 
     Instruktur findByIdInstruktur(String id);

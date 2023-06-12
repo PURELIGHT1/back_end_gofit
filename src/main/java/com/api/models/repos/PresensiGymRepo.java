@@ -13,7 +13,7 @@ public interface PresensiGymRepo extends JpaRepository<PresensiGym, String> {
     @Query("SELECT pg FROM PresensiGym pg WHERE pg.status = 'S'")
     public List<PresensiGym> findAllPresensiGym();
 
-    @Query("SELECT pg FROM PresensiGym pg WHERE pg.member = ?1")
-    public List<PresensiGym> findAllPresensiGymMember(Member member);
+    // @Query("SELECT pg FROM PresensiGym pg WHERE pg.member = ?1")
+    // public List<PresensiGym> findAllPresensiGymMember(Member member);
 
 }

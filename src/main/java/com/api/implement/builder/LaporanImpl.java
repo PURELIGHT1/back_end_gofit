@@ -1,32 +1,36 @@
 package com.api.implement.builder;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.api.dto.ExportPendapatanResponse;
+import com.api.dto.ExportResponseGymBulanan;
 import com.api.dto.ExportResponseKelasBulanan;
+import com.api.dto.ExportResponseKinerjaBulanan;
 import com.api.dto.ResponseGymBulanan;
 import com.api.dto.ResponseKelasBulanan;
+import com.api.dto.ResponseKinerjaBulanan;
 import com.api.implement.JadwalHarianImpl;
 import com.api.implement.KelasImpl;
+import com.api.implement.services.InstrukturService;
+import com.api.models.entities.BookingKelas;
+import com.api.models.entities.Instruktur;
 import com.api.models.entities.JadwalHarian;
 import com.api.models.entities.Kelas;
+import com.api.models.entities.PresensiInstruktur;
+import com.api.models.repos.BookingGymRepo;
 import com.api.models.repos.BookingKelasRepo;
 import com.api.models.repos.DepositUangRepo;
 import com.api.models.repos.JadwalHarianRepo;
+import com.api.models.repos.PresensiInstrukturRepo;
 import com.api.models.repos.TransaksiAktivasiRepo;
 
 @Service
@@ -41,13 +45,22 @@ public class LaporanImpl {
     private KelasImpl kelasImpl;
 
     @Autowired
+    private InstrukturService instrukturService;
+
+    @Autowired
     private JadwalHarianImpl jadwalHarianImpl;
+
+    @Autowired
+    private PresensiInstrukturRepo pIRepo;
 
     @Autowired
     private JadwalHarianRepo jHRepo;
 
     @Autowired
     private BookingKelasRepo bKRepo;
+
+    @Autowired
+    private BookingGymRepo bookingGymRepo;
 
     public List<Integer> pendapatanPerTahun(Integer tahun) {
         List<Integer> p = new ArrayList<>();
@@ -282,12 +295,11 @@ public class LaporanImpl {
         return list;
     }
 
-    public ResponseGymBulanan GymPerBulan(Integer bulan, Integer tahun) {
-        // public ResponseGymBulanan GymPerBulan(Integer bulan, Integer tahun) {
+    public ResponseGymBulanan gymPerBulan(Integer bulan, Integer tahun) {
         ResponseGymBulanan response = new ResponseGymBulanan();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy");
         DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("MM");
-
+        DateTimeFormatter dtf3 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         ZoneId z = ZoneId.of("Asia/Jakarta");
         LocalDateTime tahunCounter = LocalDateTime.now(z);
 
@@ -302,7 +314,11 @@ public class LaporanImpl {
         List<Date> responseTgl = new ArrayList<>();
         List<Integer> responseMember = new ArrayList<>();
 
+        List<String> counterTgl = new ArrayList<>();
+
         LocalDate ld = LocalDate.of(tahun, bulan, 1);
+        String tgl = ld.format(dtf3);
+        counterTgl.add(tgl);
         if (bulan == 12) {
             LocalDate ld2 = LocalDate.of(tahun + 1, 1, 1);
 
@@ -314,12 +330,11 @@ public class LaporanImpl {
                 if (date.equals(counter)) {
                     break;
                 }
+                String tgl2 = ld3.format(dtf3);
+                counterTgl.add(tgl2);
                 responseTgl.add(date);
             }
             responseTgl.add(counter);
-
-            response.setTgl(responseTgl);
-            response.setMember(responseMember);
         } else {
             LocalDate ld2 = LocalDate.of(tahun, bulan + 1, 1);
 
@@ -328,42 +343,190 @@ public class LaporanImpl {
             for (int i = 1; i < 33; i++) {
                 LocalDate ld3 = ld.plusDays(i);
                 Date date = Date.from(ld3.atStartOfDay(z).toInstant());
+
+                String tgl2 = ld3.format(dtf3);
                 if (date.equals(counter)) {
                     break;
                 }
                 responseTgl.add(date);
+                counterTgl.add(tgl2);
             }
             responseTgl.add(counter);
-
-            response.setTgl(responseTgl);
-            response.setMember(responseMember);
         }
 
+        for (int j = 0; j < counterTgl.size(); j++) {
+            String date = counterTgl.get(j);
+
+            Integer member = bookingGymRepo.getJlhMemberGym(date);
+            responseMember.add(member);
+        }
+
+        response.setTgl(responseTgl);
+        response.setMember(responseMember);
+        // response.setCounter(counterTgl);
         return response;
     }
 
-    public List<ExportResponseKelasBulanan> exportGymPerBulan(Integer bulan,
+    public List<ExportResponseGymBulanan> exportGymPerBulan(Integer bulan,
             Integer tahun) {
-        // ResponseKelasBulanan expo = GymPerBulan(bulan, tahun);
+        ResponseGymBulanan expo = gymPerBulan(bulan, tahun);
+        List<ExportResponseGymBulanan> list = new ArrayList<>();
 
-        List<ExportResponseKelasBulanan> list = new ArrayList<>();
+        List<Integer> member = expo.getMember();
+        List<Date> tgl = expo.getTgl();
 
-        // List<String> kelas = expo.getKelas();
-        // List<Integer> jlhPeserta = expo.getJlhPeserta();
-        // List<Integer> jlhLibur = expo.getLibur();
-        // List<String> ins = expo.getIns();
-
-        // for (int i = 0; i < kelas.size(); i++) {
-        // ExportResponseKelasBulanan kb = new ExportResponseKelasBulanan();
-
-        // kb.setKelas(kelas.get(i));
-        // kb.setInstruktur(ins.get(i));
-        // kb.setPeserta(jlhPeserta.get(i));
-        // kb.setLibur(jlhLibur.get(i));
-        // list.add(kb);
-        // }
+        for (int i = 0; i < tgl.size(); i++) {
+            ExportResponseGymBulanan gb = new ExportResponseGymBulanan();
+            Date date = tgl.get(i);
+            Integer jlh = member.get(i);
+            gb.setJlhMember(jlh);
+            gb.setTanggal(date);
+            list.add(gb);
+        }
 
         return list;
     }
 
+    public ResponseKinerjaBulanan kinerjaInstrukturBulanan(Integer bulan, Integer tahun) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy");
+        DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("MM");
+
+        ZoneId z = ZoneId.of("Asia/Jakarta");
+        LocalDateTime tahunCounter = LocalDateTime.now(z);
+
+        if (tahun == 0) {
+            tahun = Integer.parseInt(dtf.format(tahunCounter));
+        }
+
+        if (bulan == 0) {
+            bulan = Integer.parseInt(dtf2.format(tahunCounter));
+        }
+
+        Integer counterSesi1 = 28800;
+        Integer counterSesi2 = 34200;
+        Integer counterSesi3 = 61200;
+        Integer counterSesi4 = 66600;
+
+        ResponseKinerjaBulanan res = new ResponseKinerjaBulanan();
+
+        List<Instruktur> listIns = instrukturService.findAllAsc();
+        List<String> responseIns = new ArrayList<>();
+        List<Integer> responseHadir = new ArrayList<>();
+        List<Integer> responseTelat = new ArrayList<>();
+
+        List<List<String>> JH = new ArrayList<>();
+        List<List<String>> Book = new ArrayList<>();
+        List<List<Integer>> Telat = new ArrayList<>();
+        List<List<Integer>> Hadir = new ArrayList<>();
+
+        for (int i = 0; i < listIns.size(); i++) {
+            responseIns.add(listIns.get(i).getInisial());
+
+            List<JadwalHarian> listJH = jHRepo.findJadwalInsByMonthAndYear(listIns.get(i).getId(), bulan, tahun);
+            List<String> jh = new ArrayList<>();
+            List<String> booking = new ArrayList<>();
+
+            List<Integer> hadir = new ArrayList<>();
+            // List<Integer> telat = new ArrayList<>();
+
+            for (int j = 0; j < listJH.size(); j++) {
+                String idJH = listJH.get(j).getId();
+                jh.add(idJH);
+
+                List<BookingKelas> listBk = bKRepo.findAllBookingJadwal(idJH);
+
+                for (int k = 0; k < listBk.size(); k++) {
+                    booking.add(listBk.get(k).getId());
+                }
+
+                Integer total = pIRepo.totalPresensiKelas(idJH);
+                hadir.add(total);
+            }
+
+            Book.add(booking);
+            JH.add(jh);
+            Hadir.add(hadir);
+        }
+
+        for (int l = 0; l < listIns.size(); l++) {
+            List<PresensiInstruktur> listPi = pIRepo.findPresensiIzinByLate(listIns.get(l).getId(), bulan, tahun);
+
+            List<Integer> telatIns = new ArrayList<>();
+            for (int m = 0; m < listPi.size(); m++) {
+                PresensiInstruktur pi = listPi.get(m);
+
+                if (pi != null) {
+                    Date tgl = pi.getTglpresensi();
+
+                    Integer counter4 = tgl.getSeconds();
+                    Integer counter5 = tgl.getMinutes() * 60;
+                    Integer counter6 = tgl.getHours() * 3600;
+
+                    if (pi.getMulaiGym() == 1) {
+                        Integer telat = counter4 + counter5 + counter6 - counterSesi1;
+                        telatIns.add(telat);
+                    } else if (pi.getMulaiGym() == 2) {
+                        Integer telat = counter4 + counter5 + counter6 - counterSesi2;
+                        telatIns.add(telat);
+                    } else if (pi.getMulaiGym() == 3) {
+                        Integer telat = counter4 + counter5 + counter6 - counterSesi3;
+                        telatIns.add(telat);
+                    } else if (pi.getMulaiGym() == 4) {
+                        Integer telat = counter4 + counter5 + counter6 - counterSesi4;
+                        telatIns.add(telat);
+                    }
+                } else {
+                    telatIns.add(0);
+                }
+            }
+            Telat.add(telatIns);
+        }
+
+        for (int n = 0; n < Hadir.size(); n++) {
+            List<Integer> listHadir = Hadir.get(n);
+
+            int total = 0;
+            for (int o = 0; o < listHadir.size(); o++) {
+                total += listHadir.get(o);
+            }
+            responseHadir.add(total);
+
+        }
+
+        for (int p = 0; p < Telat.size(); p++) {
+            List<Integer> listTelat = Telat.get(p);
+
+            int total = 0;
+            for (int q = 0; q < listTelat.size(); q++) {
+                total += listTelat.get(q);
+            }
+            responseTelat.add(total);
+
+        }
+        res.setIns(responseIns);
+        res.setHadir(responseHadir);
+        res.setTelat(responseTelat);
+        return res;
+    }
+
+    public List<ExportResponseKinerjaBulanan> exportKinerjaPerBulan(Integer bulan,
+            Integer tahun) {
+        ResponseKinerjaBulanan expo = kinerjaInstrukturBulanan(bulan, tahun);
+        List<Instruktur> listIns = instrukturService.findAllAsc();
+
+        List<ExportResponseKinerjaBulanan> list = new ArrayList<>();
+        List<String> ins = expo.getIns();
+        List<Integer> hadir = expo.getHadir();
+        List<Integer> telat = expo.getTelat();
+
+        for (int i = 0; i < listIns.size(); i++) {
+            ExportResponseKinerjaBulanan kb = new ExportResponseKinerjaBulanan();
+            kb.setInstruktur(ins.get(i));
+            kb.setHadir(hadir.get(i));
+            kb.setTelat(telat.get(i));
+            list.add(kb);
+        }
+
+        return list;
+    }
 }

@@ -57,9 +57,9 @@ public class ProfileMemberImpl {
 
         // Member memberDB = memberImpl.findByIdMember(id);
         List<BookingGym> listBookingGym = bookingGymImpl.findAllById(id);
-        List<PresensiGym> listPresensiGyym = presensiGymImpl.findAllByMember(id);
+        // List<PresensiGym> listPresensiGyym = presensiGymImpl.findAllByMember(id);
         List<BookingKelas> listBookingKelas = bookingKelasImpl.findAllByMember(id);
-        List<PresensiGym> listPresensiGym = presensiGymImpl.findAllByMember(id);
+        // List<PresensiGym> listPresensiGym = presensiGymImpl.findAllByMember(id);
         // List<PresensiKelas> listPresensiKelas =
         // presensiKelasImpl.findAllByMember(id);
         List<TransaksiAktivasi> listTransaksiAktivasi = transaksiAktivasiImpl.findByMember(id);
@@ -68,7 +68,7 @@ public class ProfileMemberImpl {
 
         BookingGymResponse bookingGymResponse = new BookingGymResponse();
         bookingGymResponse.setListBookingGym(listBookingGym);
-        bookingGymResponse.setListPresensiGym(listPresensiGyym);
+        // bookingGymResponse.setListPresensiGym(listPresensiGyym);
         // DB.builder()
         // .member(memberDB)
         // .listBookingGym(listBookingGym)
@@ -82,7 +82,7 @@ public class ProfileMemberImpl {
         // DB.setBookingGym(bookingGymResponse);
         DB.setListBookingGym(listBookingGym);
         DB.setListBookingKelas(listBookingKelas);
-        DB.setListPresensiGym(listPresensiGym);
+        // DB.setListPresensiGym(listPresensiGym);
         // DB.setListPresensiKelas(listPresensiKelas);
         DB.setListTransaksiAktivasi(listTransaksiAktivasi);
         DB.setListTransaksiDepositUang(listTransaksiDepositUang);
