@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api")
-@CrossOrigin(origins = "http://localhost:5173/")
+@CrossOrigin(origins = "https://gofitfitness.netlify.app/")
 public class PromoController {
 
         @Autowired
@@ -91,7 +91,7 @@ public class PromoController {
                                 promoService.findAll());
         }
 
-        // @CrossOrigin(origins = "http://localhost:5173/")
+        // @CrossOrigin(origins = "https://gofitfitness.netlify.app/")
         // @DeleteMapping("/promos/{id}")
         // public ResponseEntity<Object> deleteById(@PathVariable("id") Integer id) {
 

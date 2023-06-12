@@ -37,7 +37,7 @@ import com.api.util.ResponseHandler;
 
 @RestController
 @RequestMapping("api")
-@CrossOrigin(origins = "http://localhost:5173/")
+@CrossOrigin(origins = "https://gofitfitness.netlify.app/")
 public class InstrukturController {
 
     @Autowired

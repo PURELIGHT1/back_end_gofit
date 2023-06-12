@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api")
-@CrossOrigin(origins = "http://localhost:5173/")
+@CrossOrigin(origins = "https://gofitfitness.netlify.app/")
 public class JadwalUmumController {
 
     @Autowired
