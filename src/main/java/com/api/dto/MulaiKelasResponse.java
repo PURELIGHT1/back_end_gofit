@@ -22,7 +22,7 @@ public class MulaiKelasResponse {
     private String hariJadwal;
     private Integer sesiJadwal;
     private String statusJadwal;
-    private String tglpresensi;
+    private Date tglpresensi;
     private Integer mulaiGym;
     private String statusPresensi;
     private String keterangan;

@@ -20,6 +20,9 @@ public interface PresensiInstrukturRepo extends JpaRepository<PresensiInstruktur
         @Query("SELECT pi From PresensiInstruktur pi where  pi.keterangan = 'PI' and pi.jadwalHarian= ?1")
         public PresensiInstruktur findPresensiIzinByIdAndJadwal(JadwalHarian jadwalHarian);
 
+        @Query("SELECT pi From PresensiInstruktur pi where  pi.keterangan = 'PK' and cast(pi.jadwalHarian as text)= ?1")
+        public PresensiInstruktur findPresensiInsByIdAndJadwal(String jadwalHarian);
+
         @Query("SELECT pi From PresensiInstruktur pi where pi.keterangan = 'PK' " +
                         "and CAST(pi.instruktur as text) = ?1 " +
                         "and extract(month from pi.tglpresensi) = ?2 " +

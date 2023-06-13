@@ -40,7 +40,7 @@ public class SecurityApi {
         http.cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/register", "/login").permitAll()
+                .requestMatchers("/register", "/login", "api/mobile/**").permitAll()
                 .anyRequest()
                 .fullyAuthenticated()
                 .and()

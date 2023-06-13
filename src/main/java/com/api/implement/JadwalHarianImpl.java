@@ -614,10 +614,10 @@ public class JadwalHarianImpl {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String tgl = dateFormat.format(now);
 
-            DB.setTglpresensi(tgl);
+            DB.setTglpresensi(now);
             DB.setMulaiGym(jadwalHarianDB.getSesiJadwal());
             DB.setStatusPresensi("AP");
-            DB.setKeterangan("presensi_kelas");
+            DB.setKeterangan("PK");
 
             PresensiInstruktur presensiInstrukturDB = new PresensiInstruktur();
             String generateString = RandomStringUtils.randomAlphanumeric(8);
@@ -626,10 +626,11 @@ public class JadwalHarianImpl {
 
             presensiInstrukturDB.setId("PK-" + generateString + "-" + inisial);
             presensiInstrukturDB.setInstruktur(jadwalHarianDB.getInstrukturPeganti());
-            // presensiInstrukturDB.setTglpresensi(tgl);
+            presensiInstrukturDB.setTglpresensi(now);
             presensiInstrukturDB.setMulaiGym(jadwalHarianDB.getSesiJadwal());
             presensiInstrukturDB.setStatus("AP");
             presensiInstrukturDB.setKeterangan("presensi_kelas");
+            presensiInstrukturDB.setJadwalHarian(jadwalHarianDB);
             presensiInstrukturRepo.save(presensiInstrukturDB);
 
             jadwalHarianDB.setStatus("G");
@@ -653,10 +654,10 @@ public class JadwalHarianImpl {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String tgl = dateFormat.format(now);
 
-            DB.setTglpresensi(tgl);
+            DB.setTglpresensi(now);
             DB.setMulaiGym(jadwalHarianDB.getSesiJadwal());
-            DB.setStatusPresensi("AP");
-            DB.setKeterangan("presensi_kelas");
+            DB.setStatusPresensi("G");
+            DB.setKeterangan("PK");
 
             PresensiInstruktur presensiInstrukturDB = new PresensiInstruktur();
             String generateString = RandomStringUtils.randomAlphanumeric(8);
@@ -665,10 +666,11 @@ public class JadwalHarianImpl {
 
             presensiInstrukturDB.setId("PK-" + generateString + "-" + inisial);
             presensiInstrukturDB.setInstruktur(jadwalHarianDB.getInstruktur());
-            // presensiInstrukturDB.setTglpresensi(tgl);
+            presensiInstrukturDB.setTglpresensi(now);
             presensiInstrukturDB.setMulaiGym(jadwalHarianDB.getSesiJadwal());
-            presensiInstrukturDB.setStatus("AP");
-            presensiInstrukturDB.setKeterangan("presensi_kelas");
+            presensiInstrukturDB.setStatus("G");
+            presensiInstrukturDB.setKeterangan("PK");
+            presensiInstrukturDB.setJadwalHarian(jadwalHarianDB);
             presensiInstrukturRepo.save(presensiInstrukturDB);
 
             jadwalHarianDB.setStatus("G");
@@ -687,62 +689,60 @@ public class JadwalHarianImpl {
         JadwalHarian jadwalHarianDB = findJadwalHarianById(idJadwal);
 
         if (jadwalHarianDB.getInstrukturPeganti() != null) {
-            DB.setIdJadwal(jadwalHarianDB.getId());
-            DB.setInstruktur(jadwalHarianDB.getInstruktur());
-            DB.setInstrukturPeganti(jadwalHarianDB.getInstrukturPeganti());
-            DB.setKelas(jadwalHarianDB.getKelas());
-            DB.setTglJadwal(jadwalHarianDB.getTglJadwal());
-            DB.setHariJadwal(jadwalHarianDB.getHariJadwal());
-            DB.setSesiJadwal(jadwalHarianDB.getSesiJadwal());
-            DB.setStatusJadwal(jadwalHarianDB.getStatus());
+            // DB.setIdJadwal(jadwalHarianDB.getId());
+            // DB.setInstruktur(jadwalHarianDB.getInstruktur());
+            // DB.setInstrukturPeganti(jadwalHarianDB.getInstrukturPeganti());
+            // DB.setKelas(jadwalHarianDB.getKelas());
+            // DB.setTglJadwal(jadwalHarianDB.getTglJadwal());
+            // DB.setHariJadwal(jadwalHarianDB.getHariJadwal());
+            // DB.setSesiJadwal(jadwalHarianDB.getSesiJadwal());
+            // DB.setStatusJadwal(jadwalHarianDB.getStatus());
 
-            Date now = new Date();
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String tgl = dateFormat.format(now);
+            // Date now = new Date();
+            // DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            // String tgl = dateFormat.format(now);
 
-            DB.setTglpresensi(tgl);
-            DB.setMulaiGym(jadwalHarianDB.getSesiJadwal());
-            DB.setStatusPresensi("AP");
-            DB.setKeterangan("presensi_kelas");
+            // DB.setTglpresensi(now);
+            // DB.setMulaiGym(jadwalHarianDB.getSesiJadwal());
+            // DB.setStatusPresensi("G");
+            // DB.setKeterangan("PK");
 
-            String ket = "presensi_kelas";
-            String status = "AP";
-            PresensiInstruktur presensiInstrukturDB = presensiInstrukturRepo.findPresensiInstruktur(
-                    jadwalHarianDB.getInstrukturPeganti(), tgl,
-                    jadwalHarianDB.getSesiJadwal(), ket, status);
+            // String ket = "PK";
+            // String status = "G";
+            PresensiInstruktur presensiInstrukturDB = presensiInstrukturRepo.findPresensiInsByIdAndJadwal(idJadwal);
 
             presensiInstrukturDB.setAkhirGym(jadwalHarianDB.getSesiJadwal() + 1);
+            presensiInstrukturDB.setStatus("E");
             presensiInstrukturRepo.save(presensiInstrukturDB);
 
             jadwalHarianDB.setStatus("E");
             jadwalHarianRepo.save(jadwalHarianDB);
             return DB;
         } else {
-            DB.setIdJadwal(jadwalHarianDB.getId());
-            DB.setInstruktur(jadwalHarianDB.getInstruktur());
-            DB.setInstrukturPeganti(jadwalHarianDB.getInstrukturPeganti());
-            DB.setKelas(jadwalHarianDB.getKelas());
-            DB.setTglJadwal(jadwalHarianDB.getTglJadwal());
-            DB.setHariJadwal(jadwalHarianDB.getHariJadwal());
-            DB.setSesiJadwal(jadwalHarianDB.getSesiJadwal());
-            DB.setStatusJadwal(jadwalHarianDB.getStatus());
+            // DB.setIdJadwal(jadwalHarianDB.getId());
+            // DB.setInstruktur(jadwalHarianDB.getInstruktur());
+            // DB.setInstrukturPeganti(jadwalHarianDB.getInstrukturPeganti());
+            // DB.setKelas(jadwalHarianDB.getKelas());
+            // DB.setTglJadwal(jadwalHarianDB.getTglJadwal());
+            // DB.setHariJadwal(jadwalHarianDB.getHariJadwal());
+            // DB.setSesiJadwal(jadwalHarianDB.getSesiJadwal());
+            // DB.setStatusJadwal(jadwalHarianDB.getStatus());
 
-            Date now = new Date();
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String tgl = dateFormat.format(now);
+            // Date now = new Date();
+            // DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            // String tgl = dateFormat.format(now);
 
-            DB.setTglpresensi(tgl);
-            DB.setMulaiGym(jadwalHarianDB.getSesiJadwal());
-            DB.setStatusPresensi("AP");
-            DB.setKeterangan("presensi_kelas");
+            // DB.setTglpresensi(now);
+            // DB.setMulaiGym(jadwalHarianDB.getSesiJadwal());
+            // DB.setStatusPresensi("G");
+            // DB.setKeterangan("PK");
 
-            String ket = "presensi_kelas";
-            String status = "AP";
-            PresensiInstruktur presensiInstrukturDB = presensiInstrukturRepo.findPresensiInstruktur(
-                    jadwalHarianDB.getInstruktur(), tgl,
-                    jadwalHarianDB.getSesiJadwal(), ket, status);
+            // String ket = "PK";
+            // String status = "G";
+            PresensiInstruktur presensiInstrukturDB = presensiInstrukturRepo.findPresensiInsByIdAndJadwal(idJadwal);
 
             presensiInstrukturDB.setAkhirGym(jadwalHarianDB.getSesiJadwal() + 1);
+            presensiInstrukturDB.setStatus("E");
             presensiInstrukturRepo.save(presensiInstrukturDB);
 
             jadwalHarianDB.setStatus("E");

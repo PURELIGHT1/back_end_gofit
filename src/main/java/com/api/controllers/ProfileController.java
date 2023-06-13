@@ -16,7 +16,7 @@ import com.api.implement.builder.ProfileMemberImpl;
 import com.api.util.ResponseHandler;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("api/mobile/")
 @CrossOrigin(origins = "https://gofitfitness.netlify.app/")
 public class ProfileController {
 
